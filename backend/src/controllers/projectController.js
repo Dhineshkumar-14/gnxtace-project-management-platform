@@ -13,6 +13,19 @@ export const getProjects = async (req, res, next) => {
   }
 };
 
+export const getProjectById = async (req, res, next) => {
+  try {
+    const project = await projectService.getProjectById(req.params.id);
+
+    return res.status(200).json({
+      success: true,
+      data: project,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const createProject = async (req, res, next) => {
   try {
     const ownerId = req.user.id; // adjust based on your auth middleware

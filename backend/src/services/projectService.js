@@ -30,6 +30,42 @@ export const getProjects = async (queryParams) => {
   };
 };
 
+export const getProjectById = async (id) => {
+  const project = await projectRepository.findDetailsById(id);
+
+  if (!project) {
+    throw new Error("Project not found");
+  }
+
+  const tasks = await taskRepository.findByProjectId(id);
+
+  const taskSummary = await taskRepository.getTaskSummary(id);
+
+  return {
+    project: {
+      id: project.id,
+      owner_id: project.owner_id,
+      name: project.name,
+      description: project.description,
+      status: project.status,
+      start_date: project.start_date,
+      due_date: project.due_date,
+      created_at: project.created_at,
+      updated_at: project.updated_at,
+    },
+
+    owner: {
+      id: project.owner_user_id,
+      name: project.owner_name,
+      email: project.owner_email,
+    },
+
+    taskSummary,
+
+    tasks,
+  };
+};
+
 export const createProject = async (projectData) => {
   const {
     ownerId,
