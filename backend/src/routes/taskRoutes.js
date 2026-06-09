@@ -4,6 +4,7 @@ import { authorize } from "../middleware/authorize.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 import {
   createTask,
+  getTaskById,
   getTasks,
   updateTask,
   updateTaskStatus,
@@ -20,4 +21,5 @@ router.patch(
   authorize("tasks:update"),
   updateTaskStatus,
 );
+router.get("/:id", authenticate, authorize("tasks:read"), getTaskById);
 export default router;

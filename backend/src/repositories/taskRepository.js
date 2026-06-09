@@ -94,7 +94,20 @@ export const count = async (filters) => {
 };
 
 export const findById = async (id) => {
-  return await db("tasks").where({ id }).first();
+  return await db("tasks as t")
+    .leftJoin("projects as p", "t.project_id", "p.id")
+    .leftJoin("users as u", "t.assignee_id", "u.id")
+    .select(
+      "t.*",
+
+      "p.name as project_name",
+
+      "u.id as assignee_user_id",
+      "u.name as assignee_name",
+      "u.email as assignee_email",
+    )
+    .where("t.id", id)
+    .first();
 };
 
 export const update = async (id, data) => {

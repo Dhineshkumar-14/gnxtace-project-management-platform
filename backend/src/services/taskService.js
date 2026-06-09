@@ -106,3 +106,13 @@ export const updateTaskStatus = async (id, status) => {
 
   return await taskRepository.findById(id);
 };
+
+export const getTaskById = async (id) => {
+  const task = await taskRepository.findById(id);
+
+  if (!task) {
+    throw new Error("Task not found");
+  }
+
+  return task;
+};

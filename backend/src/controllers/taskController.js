@@ -57,3 +57,16 @@ export const updateTaskStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getTaskById = async (req, res, next) => {
+  try {
+    const task = await taskService.getTaskById(req.params.id);
+
+    return res.status(200).json({
+      success: true,
+      data: task,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
