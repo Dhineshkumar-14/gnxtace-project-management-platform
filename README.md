@@ -76,9 +76,9 @@ Controller
 | Role    | Email                                             | Password  |
 | ------- | ------------------------------------------------- | --------- |
 | Admin   | [admin@example.com](mailto:admin@example.com)     | Admin@123 |
-| Manager | [manager@example.com](mailto:manager@example.com) | Admin@123 |
-| Member  | [member@example.com](mailto:member@example.com)   | Admin@123 |
-| Viewer  | [viewer@example.com](mailto:viewer@example.com)   | Admin@123 |
+| Manager | [manager@example.com](mailto:manager@example.com) | User@1234 |
+| Member  | [member@example.com](mailto:member@example.com)   | User@1234 |
+| Viewer  | [viewer@example.com](mailto:viewer@example.com)   | User@1234 |
 
 ### Frontend Authentication
 
