@@ -60,3 +60,22 @@ export const updateUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateUserRoles = async (req, res, next) => {
+  try {
+    const roleIds = req.body.role_ids || [];
+
+    const result = await userService.updateUserRoles(
+      Number(req.params.id),
+      roleIds,
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "User roles updated successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

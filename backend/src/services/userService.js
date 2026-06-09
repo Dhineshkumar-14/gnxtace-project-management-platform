@@ -80,11 +80,25 @@ export const updateUser = async (id, data) => {
   await userRepository.update(id, data);
 
   if (data.role_id) {
-    await userRepository.updateRole(
-      id,
-      data.role_id,
-    );
+    await userRepository.updateRoles(id, data.role_id);
   }
 
   return await userRepository.findById(id);
+};
+
+export const updateUserRoles = async (userId, roleIds) => {
+  const user = await userRepository.findById(userId);
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  await userRepository.updateRoles(userId, roleIds);
+
+  const roles = await userRepository.getRolesByUserId(userId);
+
+  return {
+    userId,
+    roles,
+  };
 };

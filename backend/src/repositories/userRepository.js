@@ -156,13 +156,26 @@ export const update = async (id, data) => {
   await db("users").where({ id }).update(payload);
 };
 
-export const updateRole = async (userId, roleId) => {
-  await db("user_roles")
-    .where({ user_id: userId })
-    .del();
+export const updateRoles = async (userId, roleIds) => {
+  await db.transaction(async (trx) => {
+    await trx("user_roles")
+      .where({
+        user_id: userId,
+      })
+      .del();
 
-  await db("user_roles").insert({
-    user_id: userId,
-    role_id: roleId,
+    const payload = roleIds.map((roleId) => ({
+      user_id: userId,
+      role_id: roleId,
+    }));
+
+    await trx("user_roles").insert(payload);
   });
+};
+
+export const getRolesByUserId = async (userId) => {
+  return db("user_roles as ur")
+    .join("roles as r", "ur.role_id", "r.id")
+    .select("r.id", "r.name")
+    .where("ur.user_id", userId);
 };
