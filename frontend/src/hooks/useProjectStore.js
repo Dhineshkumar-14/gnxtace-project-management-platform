@@ -111,4 +111,37 @@ export const useProjectStore = create((set, get) => ({
       });
     }
   },
+  deleteProject: async (id) => {
+    try {
+      set({
+        isLoading: true,
+        error: null,
+      });
+
+      const response = await apiClient.delete(`/projects/${id}`);
+
+      await get().fetchProjects();
+
+      return {
+        success: true,
+        message: response?.data?.message || "Project archived successfully",
+      };
+    } catch (error) {
+      const message =
+        error?.response?.data?.message || "Failed to archive project";
+
+      set({
+        error: message,
+      });
+
+      return {
+        success: false,
+        message,
+      };
+    } finally {
+      set({
+        isLoading: false,
+      });
+    }
+  },
 }));

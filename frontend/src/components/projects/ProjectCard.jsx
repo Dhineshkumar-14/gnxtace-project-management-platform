@@ -1,8 +1,8 @@
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
 import { formatDate } from "../../utils/formatDate";
 
-function ProjectCard({ project, onEdit }) {
+function ProjectCard({ project, onEdit, onDelete }) {
   const statusClasses = {
     active: "bg-green-100 text-green-700",
     completed: "bg-blue-100 text-blue-700",
@@ -28,9 +28,18 @@ function ProjectCard({ project, onEdit }) {
 
           <button
             onClick={onEdit}
-            className="rounded-md p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 cursor-pointer"
+            className="cursor-pointer rounded-md p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+            title="Edit Project"
           >
             <Pencil size={16} />
+          </button>
+
+          <button
+            onClick={onDelete}
+            className="cursor-pointer rounded-md p-2 text-red-500 transition hover:bg-red-50 hover:text-red-700"
+            title="Archive Project"
+          >
+            <Trash2 size={16} />
           </button>
         </div>
       </div>

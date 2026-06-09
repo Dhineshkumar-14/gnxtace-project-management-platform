@@ -18,6 +18,7 @@ function ProjectsPage() {
     fetchProjects,
     createProject,
     updateProject,
+    deleteProject,
     isLoading,
   } = useProjectStore();
 
@@ -41,6 +42,22 @@ function ProjectsPage() {
   const handleCloseModal = () => {
     setSelectedProject(null);
     setIsModalOpen(false);
+  };
+
+  const handleDeleteProject = async (projectId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this project?",
+    );
+
+    if (!confirmed) return;
+
+    const result = await deleteProject(projectId);
+
+    if (result.success) {
+      successToast(result.message);
+    } else {
+      errorToast(result.message);
+    }
   };
 
   return (
@@ -86,6 +103,7 @@ function ProjectsPage() {
               key={project.id}
               project={project}
               onEdit={() => handleEditProject(project)}
+              onDelete={() => handleDeleteProject(project.id)}
             />
           ))}
         </div>
