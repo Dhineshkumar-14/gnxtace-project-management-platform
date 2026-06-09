@@ -73,7 +73,17 @@ function TasksPage() {
         <TaskEmptyState />
       )}
 
-      {pagination && <TaskPagination pagination={pagination} />}
+      {pagination && (
+        <TaskPagination
+          pagination={pagination}
+          onPageChange={(page) =>
+            setFilters({
+              ...filters,
+              page,
+            })
+          }
+        />
+      )}
 
       <TaskModal
         open={isModalOpen}
