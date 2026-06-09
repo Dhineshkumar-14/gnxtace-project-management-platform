@@ -4,10 +4,11 @@ export const findDetailsById = async (id) => {
   return await db("projects as p")
     .leftJoin("users as u", "p.owner_id", "u.id")
     .select(
-      "p.*",
-      "u.id as owner_user_id",
-      "u.name as owner_name",
-      "u.email as owner_email",
+      "t.*",
+      "p.name as project_name",
+      "u.id as assignee_user_id",
+      db.raw(`CONCAT(u.first_name, ' ', u.last_name) as assignee_name`),
+      "u.email as assignee_email",
     )
     .where("p.id", id)
     .first();
@@ -93,17 +94,31 @@ export const count = async (filters) => {
   return Number(result.total);
 };
 
+export const create = async (data) => {
+  const result = await db("tasks")
+    .insert({
+      project_id: data.project_id,
+      assignee_id: data.assignee_id || null,
+      title: data.title,
+      description: data.description || null,
+      status: data.status || "todo",
+      priority: data.priority || "medium",
+      due_date: data.due_date || null,
+    })
+    .returning("id");
+
+  return result[0].id;
+};
+
 export const findById = async (id) => {
   return await db("tasks as t")
     .leftJoin("projects as p", "t.project_id", "p.id")
     .leftJoin("users as u", "t.assignee_id", "u.id")
     .select(
       "t.*",
-
       "p.name as project_name",
-
       "u.id as assignee_user_id",
-      "u.name as assignee_name",
+      db.raw(`u.first_name || ' ' || u.last_name as assignee_name`),
       "u.email as assignee_email",
     )
     .where("t.id", id)

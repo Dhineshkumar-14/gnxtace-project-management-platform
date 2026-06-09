@@ -53,4 +53,67 @@ export const useTaskStore = create((set, get) => ({
       });
     }
   },
+  createTask: async (payload) => {
+    try {
+      set({
+        isLoading: true,
+        error: null,
+      });
+
+      await apiClient.post("/tasks", payload);
+
+      await get().fetchTasks();
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      const message = error?.response?.data?.message || "Failed to create task";
+
+      set({
+        error: message,
+      });
+
+      return {
+        success: false,
+        message,
+      };
+    } finally {
+      set({
+        isLoading: false,
+      });
+    }
+  },
+
+  updateTask: async (id, payload) => {
+    try {
+      set({
+        isLoading: true,
+        error: null,
+      });
+
+      await apiClient.put(`/tasks/${id}`, payload);
+
+      await get().fetchTasks();
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      const message = error?.response?.data?.message || "Failed to update task";
+
+      set({
+        error: message,
+      });
+
+      return {
+        success: false,
+        message,
+      };
+    } finally {
+      set({
+        isLoading: false,
+      });
+    }
+  },
 }));

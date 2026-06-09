@@ -1,3 +1,5 @@
+import TaskEmptyState from "./TaskEmptyState";
+
 function TaskTable({ tasks }) {
   return (
     <div className="overflow-hidden rounded-xl bg-white shadow-sm">
