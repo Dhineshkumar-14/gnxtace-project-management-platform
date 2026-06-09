@@ -39,3 +39,52 @@ export const getProjectStats = async (projectId) => {
     progress,
   };
 };
+
+export const findAll = async (filters) => {
+  const query = db("tasks");
+
+  if (filters.projectId) {
+    query.where("project_id", filters.projectId);
+  }
+
+  if (filters.status) {
+    query.where("status", filters.status);
+  }
+
+  if (filters.priority) {
+    query.where("priority", filters.priority);
+  }
+
+  if (filters.assigneeId) {
+    query.where("assignee_id", filters.assigneeId);
+  }
+
+  return query
+    .orderBy("created_at", "desc")
+    .limit(filters.limit)
+    .offset(filters.offset);
+};
+
+export const count = async (filters) => {
+  const query = db("tasks").count("* as total");
+
+  if (filters.projectId) {
+    query.where("project_id", filters.projectId);
+  }
+
+  if (filters.status) {
+    query.where("status", filters.status);
+  }
+
+  if (filters.priority) {
+    query.where("priority", filters.priority);
+  }
+
+  if (filters.assigneeId) {
+    query.where("assignee_id", filters.assigneeId);
+  }
+
+  const result = await query.first();
+
+  return Number(result.total);
+};
