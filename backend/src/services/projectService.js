@@ -29,3 +29,29 @@ export const getProjects = async (queryParams) => {
     },
   };
 };
+
+export const createProject = async (projectData) => {
+  const {
+    ownerId,
+    name,
+    description,
+    status = "active",
+    start_date,
+    due_date,
+  } = projectData;
+
+  if (!name?.trim()) {
+    throw new Error("Project name is required");
+  }
+
+  const projectId = await projectRepository.create({
+    ownerId,
+    name,
+    description,
+    status,
+    start_date,
+    due_date,
+  });
+
+  return await projectRepository.findById(projectId);
+};

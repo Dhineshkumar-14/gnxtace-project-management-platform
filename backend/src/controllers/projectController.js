@@ -12,3 +12,22 @@ export const getProjects = async (req, res, next) => {
     next(error);
   }
 };
+
+export const createProject = async (req, res, next) => {
+  try {
+    const ownerId = req.user.id; // adjust based on your auth middleware
+
+    const project = await projectService.createProject({
+      ownerId,
+      ...req.body,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Project created successfully",
+      data: project,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

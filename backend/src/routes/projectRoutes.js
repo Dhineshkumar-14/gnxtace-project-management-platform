@@ -14,4 +14,11 @@ router.get(
   projectController.getProjects,
 );
 
+router.post(
+  "/",
+  authenticate,
+  authorize("projects:create"),
+  projectController.createProject,
+);
+
 export default router;
