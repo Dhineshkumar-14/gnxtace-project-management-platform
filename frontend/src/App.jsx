@@ -4,7 +4,8 @@ import { Toaster } from "sonner";
 function App() {
   return (
     <div>
-      <LoginPage /> <Toaster richColors position="top-right" />
+      <LoginPage />
+      <Toaster richColors position="top-right" />
     </div>
   );
 }
