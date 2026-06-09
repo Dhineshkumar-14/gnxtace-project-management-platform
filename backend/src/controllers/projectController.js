@@ -71,3 +71,18 @@ export const deleteProject = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getProjectStats = async (req, res, next) => {
+  try {
+    const stats = await projectService.getProjectStats(req.params.id);
+
+    return res.status(200).json({
+      success: true,
+      data: stats,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+

@@ -1,4 +1,5 @@
 import * as projectRepository from "../repositories/projectRepository.js";
+import * as taskRepository from "../repositories/taskRepository.js";
 
 export const getProjects = async (queryParams) => {
   const page = Number(queryParams.page) || 1;
@@ -122,4 +123,15 @@ export const deleteProject = async (id) => {
   await projectRepository.archive(id);
 
   return true;
+};
+
+
+export const getProjectStats = async (id) => {
+  const project = await projectRepository.findById(id);
+
+  if (!project) {
+    throw new Error("Project not found");
+  }
+
+  return await taskRepository.getProjectStats(id);
 };

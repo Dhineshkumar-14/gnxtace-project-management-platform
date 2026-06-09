@@ -7,6 +7,7 @@ import {
   deleteProject,
   getProjectById,
   getProjects,
+  getProjectStats,
   updateProject,
 } from "../controllers/projectController.js";
 
@@ -25,6 +26,13 @@ router.delete(
   authenticate,
   authorize("projects:delete"),
   deleteProject,
+);
+
+router.get(
+  "/:id/stats",
+  authenticate,
+  authorize("projects:read"),
+  getProjectStats,
 );
 
 export default router;
