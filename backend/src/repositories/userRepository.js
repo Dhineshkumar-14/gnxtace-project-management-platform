@@ -179,3 +179,12 @@ export const getRolesByUserId = async (userId) => {
     .select("r.id", "r.name")
     .where("ur.user_id", userId);
 };
+
+export const deactivate = async (id) => {
+  await db("users")
+    .where({ id })
+    .update({
+      is_active: false,
+      updated_at: db.fn.now(),
+    });
+};

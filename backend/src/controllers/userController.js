@@ -79,3 +79,17 @@ export const updateUserRoles = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deactivateUser = async (req, res, next) => {
+  try {
+    const result = await userService.deactivateUser(Number(req.params.id));
+
+    return res.status(200).json({
+      success: true,
+      message: "User deactivated successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

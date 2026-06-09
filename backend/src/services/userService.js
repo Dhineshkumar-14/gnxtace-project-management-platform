@@ -102,3 +102,25 @@ export const updateUserRoles = async (userId, roleIds) => {
     roles,
   };
 };
+
+export const deactivateUser = async (id) => {
+  const user = await userRepository.findById(id);
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  if (!user.is_active) {
+    throw new AppError(
+      "User is already deactivated",
+      400,
+    );
+  }
+
+  await userRepository.deactivate(id);
+
+  return {
+    id,
+    is_active: false,
+  };
+};
