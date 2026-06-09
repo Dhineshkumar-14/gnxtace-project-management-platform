@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 
 import { useAuthStore } from "../hooks/useAuthStore";
@@ -6,16 +7,18 @@ import { errorToast, successToast } from "../utils/toast";
 import { validateLoginForm } from "../utils/validation";
 
 function LoginPage() {
+  const navigate = useNavigate();
+
   const login = useAuthStore((state) => state.login);
+
+  const isLoading = useAuthStore((state) => state.isLoading);
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
-  const [loading, setLoading] = useState(false);
-
-  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -26,26 +29,27 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const errors = validateLoginForm(formData);
+
     if (errors) {
       return errorToast(errors);
     }
-    try {
-      setLoading(true);
 
+    try {
       await login(formData.email, formData.password);
 
       successToast("Login successful");
+
+      navigate("/");
     } catch (error) {
       errorToast(error?.response?.data?.message || "Invalid email or password");
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-indigo-100 to-purple-100 px-4 py-10">
-      <div className="w-full max-w-md rounded-3xl bg-white/80 backdrop-blur-xl p-8 shadow-2xl border border-white/30">
+      <div className="w-full max-w-md rounded-3xl bg-white/80 backdrop-blur-xl border border-white/30 shadow-2xl p-8">
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600">
             <span className="text-xl font-bold text-white">PM</span>
@@ -111,10 +115,10 @@ function LoginPage() {
 
           <button
             type="submit"
-            disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3.5 font-medium text-white shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl disabled:opacity-70"
+            disabled={isLoading}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3.5 font-medium text-white shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {loading ? (
+            {isLoading ? (
               <>
                 <Loader2 size={18} className="animate-spin" />
                 Signing In...
