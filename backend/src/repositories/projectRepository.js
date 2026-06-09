@@ -113,3 +113,10 @@ export const update = async (id, data) => {
 
   await db("projects").where({ id }).update(payload);
 };
+
+export const archive = async (id) => {
+  await db("projects").where({ id }).update({
+    status: "archived",
+    updated_at: db.fn.now(),
+  });
+};

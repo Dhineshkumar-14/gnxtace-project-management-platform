@@ -58,3 +58,16 @@ export const updateProject = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteProject = async (req, res, next) => {
+  try {
+    await projectService.deleteProject(req.params.id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Project archived successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -111,3 +111,15 @@ export const updateProject = async (id, projectData) => {
 
   return await projectRepository.findById(id);
 };
+
+export const deleteProject = async (id) => {
+  const project = await projectRepository.findById(id);
+
+  if (!project) {
+    throw new Error("Project not found");
+  }
+
+  await projectRepository.archive(id);
+
+  return true;
+};

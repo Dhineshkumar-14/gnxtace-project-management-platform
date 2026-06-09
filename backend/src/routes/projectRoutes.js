@@ -4,6 +4,7 @@ import { authorize } from "../middleware/authorize.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 import {
   createProject,
+  deleteProject,
   getProjectById,
   getProjects,
   updateProject,
@@ -17,11 +18,13 @@ router.post("/", authenticate, authorize("projects:create"), createProject);
 
 router.put("/:id", authenticate, authorize("projects:update"), updateProject);
 
-router.get(
+router.get("/:id", authenticate, authorize("projects:read"), getProjectById);
+
+router.delete(
   "/:id",
   authenticate,
-  authorize("projects:read"),
-  getProjectById,
+  authorize("projects:delete"),
+  deleteProject,
 );
 
 export default router;
