@@ -1,6 +1,10 @@
-import { findByEmail } from "../repositories/userRepository.js";
+import { findByEmail, findById, findUserWithRolesAndPermissions } from "../repositories/userRepository.js";
 import { comparePassword } from "../utils/password.js";
-import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} from "../utils/jwt.js";
 
 export const login = async (email, password) => {
   const user = await findByEmail(email);
@@ -37,4 +41,21 @@ export const logout = async () => {
     success: true,
     message: "Logged out successfully",
   };
+};
+
+export const refreshAccessToken = async (refreshToken) => {
+  const decoded = verifyRefreshToken(refreshToken);
+
+  const accessToken = generateAccessToken({
+    userId: decoded.userId,
+    email: decoded.email,
+  });
+
+  return {
+    accessToken,
+  };
+};
+
+export const getCurrentUser = async (userId) => {
+  return findUserWithRolesAndPermissions(userId);
 };
