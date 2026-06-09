@@ -31,3 +31,10 @@ export const login = async (email, password) => {
     },
   };
 };
+
+export const logout = async () => {
+  return {
+    success: true,
+    message: "Logged out successfully",
+  };
+};

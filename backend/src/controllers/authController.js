@@ -12,3 +12,13 @@ export const login = async (req, res, next) => {
     next(error);
   }
 };
+
+export const logout = async (req, res, next) => {
+  try {
+    const result = await authService.logout();
+
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
