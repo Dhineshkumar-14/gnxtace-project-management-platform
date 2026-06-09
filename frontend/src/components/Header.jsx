@@ -3,6 +3,7 @@ import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 import { useAuthStore } from "../hooks/useAuthStore";
+import { hasPermission } from "../utils/permissions";
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -20,6 +21,32 @@ function Header() {
 
   const pageTitle = pageTitles[location.pathname] || "Dashboard";
 
+  const menuItems = [
+    {
+      label: "Dashboard",
+      path: "/",
+    },
+    {
+      label: "Projects",
+      path: "/projects",
+      permission: "projects:read",
+    },
+    {
+      label: "Tasks",
+      path: "/tasks",
+      permission: "tasks:read",
+    },
+    {
+      label: "Users",
+      path: "/users",
+      permission: "users:manage",
+    },
+  ];
+
+  const visibleMenuItems = menuItems.filter(
+    (item) => !item.permission || hasPermission(user, item.permission),
+  );
+
   return (
     <>
       <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 md:px-6">
@@ -36,7 +63,7 @@ function Header() {
               {pageTitle}
             </h1>
 
-            <p className="hidden md:block text-xs text-slate-500">
+            <p className="hidden text-xs text-slate-500 md:block">
               Manage your {pageTitle.toLowerCase()}
             </p>
           </div>
@@ -57,49 +84,32 @@ function Header() {
         </div>
       </header>
 
-      {/* Mobile Menu */}
       {menuOpen && (
         <>
-          {/* Backdrop */}
           <div
             className="fixed inset-0 z-40 bg-black/40 md:hidden"
             onClick={() => setMenuOpen(false)}
           />
 
-          {/* Menu */}
           <div className="fixed left-4 top-20 z-50 w-64 rounded-2xl border border-slate-200 bg-white p-3 shadow-xl md:hidden">
             <nav className="flex flex-col gap-1">
-              <NavLink
-                to="/"
-                onClick={() => setMenuOpen(false)}
-                className="rounded-lg px-4 py-3 text-sm font-medium hover:bg-slate-100"
-              >
-                Dashboard
-              </NavLink>
-
-              <NavLink
-                to="/projects"
-                onClick={() => setMenuOpen(false)}
-                className="rounded-lg px-4 py-3 text-sm font-medium hover:bg-slate-100"
-              >
-                Projects
-              </NavLink>
-
-              <NavLink
-                to="/tasks"
-                onClick={() => setMenuOpen(false)}
-                className="rounded-lg px-4 py-3 text-sm font-medium hover:bg-slate-100"
-              >
-                Tasks
-              </NavLink>
-
-              <NavLink
-                to="/users"
-                onClick={() => setMenuOpen(false)}
-                className="rounded-lg px-4 py-3 text-sm font-medium hover:bg-slate-100"
-              >
-                Users
-              </NavLink>
+              {visibleMenuItems.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  end={item.path === "/"}
+                  onClick={() => setMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                      isActive
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-slate-700 hover:bg-slate-100"
+                    }`
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
             </nav>
           </div>
         </>
