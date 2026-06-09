@@ -116,3 +116,15 @@ export const getTaskById = async (id) => {
 
   return task;
 };
+
+export const deleteTask = async (id) => {
+  const task = await taskRepository.findById(id);
+
+  if (!task) {
+    throw new Error("Task not found");
+  }
+
+  await taskRepository.deleteById(id);
+
+  return true;
+};

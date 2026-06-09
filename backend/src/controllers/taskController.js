@@ -70,3 +70,17 @@ export const getTaskById = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteTask = async (req, res, next) => {
+  try {
+    await taskService.deleteTask(req.params.id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Task deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

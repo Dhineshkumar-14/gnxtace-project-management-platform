@@ -152,3 +152,7 @@ export const updateStatus = async (id, status) => {
     updated_at: db.fn.now(),
   });
 };
+
+export const deleteById = async (id) => {
+  await db("tasks").where({ id }).del();
+};
