@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/projects", projectRoutes);
-app.use("/api/v1/projects", taskRoutes);
+app.use("/api/v1/tasks", taskRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);

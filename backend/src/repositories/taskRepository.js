@@ -43,6 +43,10 @@ export const getProjectStats = async (projectId) => {
 export const findAll = async (filters) => {
   const query = db("tasks");
 
+  if (filters.search) {
+    query.whereILike("title", `%${filters.search}%`);
+  }
+
   if (filters.projectId) {
     query.where("project_id", filters.projectId);
   }

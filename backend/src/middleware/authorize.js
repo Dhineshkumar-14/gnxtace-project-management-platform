@@ -2,6 +2,7 @@ export const authorize = (...requiredPermissions) => {
   return (req, res, next) => {
     try {
       const userPermissions = req.user?.permissions || [];
+      console.log(userPermissions);
 
       const hasPermission = requiredPermissions.some((permission) =>
         userPermissions.includes(permission),

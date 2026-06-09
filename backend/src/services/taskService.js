@@ -8,6 +8,7 @@ export const getTasks = async (queryParams) => {
   const offset = (page - 1) * limit;
 
   const filters = {
+    search: queryParams.search || null,
     projectId: queryParams.projectId || null,
     status: queryParams.status || null,
     priority: queryParams.priority || null,
