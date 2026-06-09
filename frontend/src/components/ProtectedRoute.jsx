@@ -1,15 +1,18 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuthStore } from "../hooks/useAuthStore";
 
 function ProtectedRoute({ requiredPermission }) {
+  const location = useLocation();
+
   const user = useAuthStore((state) => state.user);
+  const accessToken = useAuthStore((state) => state.accessToken);
 
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-
-  if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />;
+  // Not logged in
+  if (!accessToken) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
+  // Permission check
   if (requiredPermission && !user?.permissions?.includes(requiredPermission)) {
     return <Navigate to="/403" replace />;
   }

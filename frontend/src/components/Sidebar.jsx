@@ -6,9 +6,31 @@ import {
   LogOut,
 } from "lucide-react";
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+
+import { useAuthStore } from "../hooks/useAuthStore";
 
 function Sidebar() {
+  const navigate = useNavigate();
+
+  const logout = useAuthStore((state) => state.logout);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+
+      navigate("/login", {
+        replace: true,
+      });
+    } catch (error) {
+      console.error("Logout failed:", error);
+
+      navigate("/login", {
+        replace: true,
+      });
+    }
+  };
+
   const menuItems = [
     {
       label: "Dashboard",
@@ -33,8 +55,9 @@ function Sidebar() {
   ];
 
   return (
-    <aside className="hidden md:flex h-screen flex-col border-r border-slate-200 bg-white md:w-20 lg:w-64 transition-all duration-300">
+    <aside className="hidden md:flex h-screen flex-col border-r border-slate-200 bg-white md:w-20 lg:w-64">
       {/* Logo */}
+
       <div className="border-b border-slate-200 p-4">
         <div className="flex items-center justify-center lg:justify-start gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-sm font-bold text-white">
@@ -50,6 +73,7 @@ function Sidebar() {
       </div>
 
       {/* Navigation */}
+
       <nav className="flex-1 p-3">
         <ul className="space-y-2">
           {menuItems.map((item) => {
@@ -69,7 +93,6 @@ function Sidebar() {
                   }
                 >
                   <Icon size={20} />
-
                   <span className="hidden lg:block">{item.label}</span>
                 </NavLink>
               </li>
@@ -78,9 +101,13 @@ function Sidebar() {
         </ul>
       </nav>
 
-      {/* Footer */}
+      {/* Logout */}
+
       <div className="border-t border-slate-200 p-3">
-        <button className="flex w-full items-center justify-center lg:justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-500 transition hover:bg-red-50">
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center justify-center lg:justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-500 transition hover:bg-red-50"
+        >
           <LogOut size={20} />
 
           <span className="hidden lg:block">Logout</span>
