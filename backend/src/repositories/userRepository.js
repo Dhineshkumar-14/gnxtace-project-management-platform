@@ -28,3 +28,70 @@ export const findUserWithRolesAndPermissions = async (userId) => {
     permissions: permissions.map((permission) => permission.name),
   };
 };
+
+export const findAll = async (filters) => {
+  const query = db("users as u")
+    .leftJoin("user_roles as ur", "u.id", "ur.user_id")
+    .leftJoin("roles as r", "ur.role_id", "r.id")
+    .select(
+      "u.id",
+      "u.email",
+      "u.first_name",
+      "u.last_name",
+      "u.is_active",
+      "u.last_login_at",
+      "u.created_at",
+      "r.id as role_id",
+      "r.name as role_name",
+    );
+
+  if (filters.search) {
+    query.where((builder) => {
+      builder
+        .whereILike("u.first_name", `%${filters.search}%`)
+        .orWhereILike("u.last_name", `%${filters.search}%`)
+        .orWhereILike("u.email", `%${filters.search}%`);
+    });
+  }
+
+  if (filters.roleId) {
+    query.where("r.id", filters.roleId);
+  }
+
+  if (filters.isActive !== undefined) {
+    query.where("u.is_active", filters.isActive);
+  }
+
+  return query
+    .orderBy("u.created_at", "desc")
+    .limit(filters.limit)
+    .offset(filters.offset);
+};
+
+export const count = async (filters) => {
+  const query = db("users as u")
+    .leftJoin("user_roles as ur", "u.id", "ur.user_id")
+    .leftJoin("roles as r", "ur.role_id", "r.id")
+    .countDistinct("u.id as total");
+
+  if (filters.search) {
+    query.where((builder) => {
+      builder
+        .whereILike("u.first_name", `%${filters.search}%`)
+        .orWhereILike("u.last_name", `%${filters.search}%`)
+        .orWhereILike("u.email", `%${filters.search}%`);
+    });
+  }
+
+  if (filters.roleId) {
+    query.where("r.id", filters.roleId);
+  }
+
+  if (filters.isActive !== undefined) {
+    query.where("u.is_active", filters.isActive);
+  }
+
+  const result = await query.first();
+
+  return Number(result.total);
+};
