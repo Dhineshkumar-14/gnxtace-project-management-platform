@@ -59,3 +59,13 @@ export const inviteUser = async ({ email, first_name, last_name, role_id }) => {
     temporaryPassword,
   };
 };
+
+export const getUserById = async (id) => {
+  const user = await userRepository.findById(id);
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  return user;
+};

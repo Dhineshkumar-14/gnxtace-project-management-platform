@@ -5,7 +5,23 @@ export const findByEmail = async (email) => {
 };
 
 export const findById = async (id) => {
-  return db("users").where({ id }).first();
+  return await db("users as u")
+    .leftJoin("user_roles as ur", "u.id", "ur.user_id")
+    .leftJoin("roles as r", "ur.role_id", "r.id")
+    .select(
+      "u.id",
+      "u.email",
+      "u.first_name",
+      "u.last_name",
+      "u.is_active",
+      "u.last_login_at",
+      "u.created_at",
+      "u.updated_at",
+      "r.id as role_id",
+      "r.name as role_name",
+    )
+    .where("u.id", id)
+    .first();
 };
 
 export const findUserWithRolesAndPermissions = async (userId) => {
