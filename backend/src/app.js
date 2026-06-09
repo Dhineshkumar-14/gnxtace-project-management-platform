@@ -5,7 +5,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 
 import authRoutes from "./routes/authRoutes.js";
-
+import projectRoutes from "./routes/projectRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -20,12 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/auth", authRoutes);
 
-app.get("/health", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Server is running",
-  });
-});
+app.use("/api/v1//projects", projectRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);
