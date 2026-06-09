@@ -95,3 +95,23 @@ export const count = async (filters) => {
 
   return Number(result.total);
 };
+
+export const createUser = async (data) => {
+  const [user] = await db("users")
+    .insert({
+      email: data.email,
+      password_hash: data.password_hash,
+      first_name: data.first_name,
+      last_name: data.last_name,
+    })
+    .returning("*");
+
+  return user;
+};
+
+export const assignRole = async (userId, roleId) => {
+  await db("user_roles").insert({
+    user_id: userId,
+    role_id: roleId,
+  });
+};
