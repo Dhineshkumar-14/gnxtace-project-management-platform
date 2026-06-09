@@ -1,4 +1,5 @@
 import * as taskRepository from "../repositories/taskRepository.js";
+import * as projectRepository from "../repositories/projectRepository.js";
 
 export const getTasks = async (queryParams) => {
   const page = Number(queryParams.page) || 1;
@@ -31,3 +32,42 @@ export const getTasks = async (queryParams) => {
     },
   };
 };
+
+export const createTask = async (taskData) => {
+  const {
+    project_id,
+    assignee_id,
+    title,
+    description,
+    status = "todo",
+    priority = "medium",
+    due_date,
+  } = taskData;
+
+  if (!project_id) {
+    throw new Error("Project is required");
+  }
+
+  const project = await projectRepository.findById(project_id);
+
+  if (!project) {
+    throw new Error("Project not found");
+  }
+
+  if (!title?.trim()) {
+    throw new Error("Task title is required");
+  }
+
+  const taskId = await taskRepository.create({
+    project_id,
+    assignee_id,
+    title,
+    description,
+    status,
+    priority,
+    due_date,
+  });
+
+  return await taskRepository.findById(taskId);
+};
+

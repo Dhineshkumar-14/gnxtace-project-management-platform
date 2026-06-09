@@ -92,3 +92,7 @@ export const count = async (filters) => {
 
   return Number(result.total);
 };
+
+export const findById = async (id) => {
+  return await db("tasks").where({ id }).first();
+};

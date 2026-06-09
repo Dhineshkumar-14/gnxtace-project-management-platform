@@ -12,3 +12,17 @@ export const getTasks = async (req, res, next) => {
     next(error);
   }
 };
+
+export const createTask = async (req, res, next) => {
+  try {
+    const task = await taskService.createTask(req.body);
+
+    return res.status(201).json({
+      success: true,
+      message: "Task created successfully",
+      data: task,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
