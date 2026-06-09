@@ -1,4 +1,4 @@
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { formatDate } from "../../utils/formatDate";
 
 const statusStyles = {
@@ -16,7 +16,7 @@ const priorityStyles = {
   critical: "bg-red-100 text-red-700",
 };
 
-function TaskTable({ tasks, onEdit }) {
+function TaskTable({ tasks, onEdit, onDelete }) {
   return (
     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
       <div className="overflow-x-auto">
@@ -96,13 +96,23 @@ function TaskTable({ tasks, onEdit }) {
                 </td>
 
                 <td className="px-4 py-3 text-right">
-                  <button
-                    onClick={() => onEdit(task)}
-                    className="inline-flex items-center gap-1 rounded-md border border-slate-300 px-2.5 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
-                  >
-                    <Pencil size={12} />
-                    Edit
-                  </button>
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => onEdit(task)}
+                      className="inline-flex items-center gap-1 rounded-md border border-slate-300 px-2.5 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
+                    >
+                      <Pencil size={12} />
+                      Edit
+                    </button>
+
+                    <button
+                      onClick={() => onDelete(task.id)}
+                      className="inline-flex items-center gap-1 rounded-md border border-red-200 px-2.5 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50"
+                    >
+                      <Trash2 size={12} />
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

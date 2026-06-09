@@ -9,6 +9,7 @@ import TaskPagination from "../components/tasks/TaskPagination";
 import TaskSkeleton from "../components/tasks/TaskSkeleton";
 import TaskTable from "../components/tasks/TaskTable";
 import TaskModal from "../components/tasks/TaskModal";
+import { errorToast, successToast } from "../utils/toast";
 
 function TasksPage() {
   const {
@@ -19,6 +20,7 @@ function TasksPage() {
     fetchTasks,
     createTask,
     updateTask,
+    deleteTask,
     isLoading,
   } = useTaskStore();
 
@@ -42,6 +44,22 @@ function TasksPage() {
   const handleCloseModal = () => {
     setSelectedTask(null);
     setIsModalOpen(false);
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this task?",
+    );
+
+    if (!confirmed) return;
+
+    const result = await deleteTask(taskId);
+
+    if (result.success) {
+      successToast(result.message);
+    } else {
+      errorToast(result.message);
+    }
   };
 
   return (
@@ -68,7 +86,11 @@ function TasksPage() {
       {isLoading ? (
         <TaskSkeleton />
       ) : tasks.length > 0 ? (
-        <TaskTable tasks={tasks} onEdit={handleEditTask} />
+        <TaskTable
+          tasks={tasks}
+          onEdit={handleEditTask}
+          onDelete={handleDeleteTask}
+        />
       ) : (
         <TaskEmptyState />
       )}

@@ -116,4 +116,36 @@ export const useTaskStore = create((set, get) => ({
       });
     }
   },
+  deleteTask: async (id) => {
+    try {
+      set({
+        isLoading: true,
+        error: null,
+      });
+
+      const response = await apiClient.delete(`/tasks/${id}`);
+
+      await get().fetchTasks();
+
+      return {
+        success: true,
+        message: response?.data?.message || "Task deleted successfully",
+      };
+    } catch (error) {
+      const message = error?.response?.data?.message || "Failed to delete task";
+
+      set({
+        error: message,
+      });
+
+      return {
+        success: false,
+        message,
+      };
+    } finally {
+      set({
+        isLoading: false,
+      });
+    }
+  },
 }));
