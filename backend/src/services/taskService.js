@@ -82,3 +82,27 @@ export const updateTask = async (id, taskData) => {
 
   return await taskRepository.findById(id);
 };
+
+export const updateTaskStatus = async (id, status) => {
+  const task = await taskRepository.findById(id);
+
+  if (!task) {
+    throw new Error("Task not found");
+  }
+
+  const allowedStatuses = [
+    "todo",
+    "in_progress",
+    "in_review",
+    "done",
+    "cancelled",
+  ];
+
+  if (!allowedStatuses.includes(status)) {
+    throw new Error("Invalid task status");
+  }
+
+  await taskRepository.updateStatus(id, status);
+
+  return await taskRepository.findById(id);
+};

@@ -40,3 +40,20 @@ export const updateTask = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateTaskStatus = async (req, res, next) => {
+  try {
+    const task = await taskService.updateTaskStatus(
+      req.params.id,
+      req.body.status,
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Task status updated successfully",
+      data: task,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

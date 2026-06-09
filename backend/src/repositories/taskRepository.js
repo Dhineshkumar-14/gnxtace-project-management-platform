@@ -132,3 +132,10 @@ export const update = async (id, data) => {
 
   await db("tasks").where({ id }).update(payload);
 };
+
+export const updateStatus = async (id, status) => {
+  await db("tasks").where({ id }).update({
+    status,
+    updated_at: db.fn.now(),
+  });
+};
