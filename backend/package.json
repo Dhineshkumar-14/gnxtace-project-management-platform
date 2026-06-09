@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+     "dev": "nodemon src/app.js"
   },
   "keywords": [],
   "author": "",
@@ -22,5 +23,8 @@
     "morgan": "^1.11.0",
     "mysql2": "^3.22.5",
     "pg": "^8.21.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
