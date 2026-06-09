@@ -71,7 +71,7 @@ export const getRecentActivities = async () => {
       "u.last_name",
     )
     .orderBy("t.created_at", "desc")
-    .limit(10);
+    .limit(4);
 };
 
 export const getOverdueTasks = async () => {
