@@ -28,7 +28,7 @@ function ProjectCard({ project, onEdit }) {
 
           <button
             onClick={onEdit}
-            className="rounded-md p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+            className="rounded-md p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 cursor-pointer"
           >
             <Pencil size={16} />
           </button>
