@@ -3,8 +3,11 @@ import { useEffect } from "react";
 import { useDashboardStore } from "../hooks/useDashBoardStore";
 
 import DashboardStats from "../components/dashboard/DashboardStats";
-import RecentActivities from "../components/dashboard/RecentActivities";
 import TaskStatusChart from "../components/dashboard/TaskStatusChart";
+import RecentActivities from "../components/dashboard/RecentActivities";
+import ProjectProgress from "../components/dashboard/ProjectProgress";
+import OverdueTasks from "../components/dashboard/OverdueTasks";
+import TopContributors from "../components/dashboard/TopContributors";
 
 function DashboardPage() {
   const { dashboard, isLoading, fetchDashboard } = useDashboardStore();
@@ -14,11 +17,7 @@ function DashboardPage() {
   }, []);
 
   if (isLoading) {
-    return (
-      <div className="rounded-xl bg-white p-6 shadow-sm">
-        Loading dashboard...
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (
@@ -32,14 +31,22 @@ function DashboardPage() {
         </p>
       </div>
 
-      {/* KPI Cards */}
-      <DashboardStats kpis={dashboard?.kpis} />
+      <div className="space-y-6">
+        <DashboardStats kpis={dashboard?.kpis} />
 
-      {/* Charts + Activity */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <TaskStatusChart data={dashboard?.taskStatus} />
+        <div className="grid gap-6 lg:grid-cols-2">
+          <TaskStatusChart data={dashboard?.taskStatus} />
 
-        <RecentActivities activities={dashboard?.recentActivities} />
+          <RecentActivities activities={dashboard?.recentActivities} />
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          <ProjectProgress projects={dashboard?.projectProgress} />
+
+          <OverdueTasks tasks={dashboard?.overdueTasks} />
+        </div>
+
+        <TopContributors contributors={dashboard?.topContributors} />
       </div>
     </div>
   );

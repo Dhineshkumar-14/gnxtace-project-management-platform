@@ -35,7 +35,7 @@ function TaskStatusChart({ data = [] }) {
               data={chartData}
               dataKey="value"
               nameKey="name"
-              innerRadius={70}
+              innerRadius={60}
               outerRadius={100}
               paddingAngle={4}
             >
@@ -52,7 +52,7 @@ function TaskStatusChart({ data = [] }) {
       {/* Legend */}
       <div className="grid grid-cols-2 gap-3 border-t border-slate-100 p-5 sm:grid-cols-4">
         {chartData.map((item, index) => (
-          <div key={item.name} className="flex items-center gap-2">
+          <div key={item.name} className="flex items-center  gap-2">
             <span
               className="h-3 w-3 rounded-full"
               style={{
@@ -61,10 +61,6 @@ function TaskStatusChart({ data = [] }) {
             />
 
             <span className="text-sm text-slate-600">{item.name}</span>
-
-            <span className="ml-auto text-sm font-semibold text-slate-900">
-              {item.value}
-            </span>
           </div>
         ))}
       </div>
