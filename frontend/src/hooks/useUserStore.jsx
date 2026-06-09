@@ -1,6 +1,6 @@
 import { create } from "zustand";
+import apiClient from "../services/apiClient";
 
-import userService from "../services/userService";
 
 export const useUserStore = create((set, get) => ({
   users: [],
@@ -41,11 +41,13 @@ export const useUserStore = create((set, get) => ({
 
       const { filters } = get();
 
-      const response = await userService.getUsers(filters);
+      const response = await apiClient.get("/users", {
+        params: filters,
+      });
 
       set({
-        users: response.data.users || [],
-        pagination: response.data.pagination || null,
+        users: response.data.data.users || [],
+        pagination: response.data.data.pagination || null,
       });
     } catch (error) {
       set({
@@ -60,48 +62,33 @@ export const useUserStore = create((set, get) => ({
 
   fetchUserById: async (id) => {
     try {
-      set({
-        isLoading: true,
-        error: null,
-      });
-
-      const response = await userService.getUserById(id);
+      const response = await apiClient.get(`/users/${id}`);
 
       set({
-        selectedUser: response.data,
+        selectedUser: response.data.data,
       });
 
       return {
         success: true,
-        data: response.data,
+        data: response.data.data,
       };
     } catch (error) {
-      const message = error?.response?.data?.message || error.message;
-
-      set({
-        error: message,
-      });
-
       return {
         success: false,
-        message,
+        message: error?.response?.data?.message || error.message,
       };
-    } finally {
-      set({
-        isLoading: false,
-      });
     }
   },
 
   inviteUser: async (payload) => {
     try {
-      const response = await userService.inviteUser(payload);
+      const response = await apiClient.post("/users/invite", payload);
 
       await get().fetchUsers();
 
       return {
         success: true,
-        data: response.data,
+        data: response.data.data,
       };
     } catch (error) {
       return {
@@ -113,13 +100,13 @@ export const useUserStore = create((set, get) => ({
 
   updateUser: async (id, payload) => {
     try {
-      const response = await userService.updateUser(id, payload);
+      const response = await apiClient.put(`/users/${id}`, payload);
 
       await get().fetchUsers();
 
       return {
         success: true,
-        data: response.data,
+        data: response.data.data,
       };
     } catch (error) {
       return {
@@ -131,13 +118,15 @@ export const useUserStore = create((set, get) => ({
 
   updateUserRoles: async (id, roleIds) => {
     try {
-      const response = await userService.updateUserRoles(id, roleIds);
+      const response = await apiClient.put(`/users/${id}/roles`, {
+        role_ids: roleIds,
+      });
 
       await get().fetchUsers();
 
       return {
         success: true,
-        data: response.data,
+        data: response.data.data,
       };
     } catch (error) {
       return {
@@ -149,13 +138,13 @@ export const useUserStore = create((set, get) => ({
 
   deactivateUser: async (id) => {
     try {
-      const response = await userService.deactivateUser(id);
+      const response = await apiClient.delete(`/users/${id}`);
 
       await get().fetchUsers();
 
       return {
         success: true,
-        data: response.data,
+        data: response.data.data,
       };
     } catch (error) {
       return {

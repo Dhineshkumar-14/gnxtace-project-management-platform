@@ -8,7 +8,10 @@ export const getUsers = async (req, res, next) => {
       limit: Number(limit),
       search,
       roleId,
-      isActive: isActive === undefined ? undefined : isActive === "true",
+      isActive:
+        isActive === undefined || isActive === ""
+          ? undefined
+          : isActive === "true",
     });
 
     return res.status(200).json({

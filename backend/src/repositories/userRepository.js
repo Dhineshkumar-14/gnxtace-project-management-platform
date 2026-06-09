@@ -181,10 +181,8 @@ export const getRolesByUserId = async (userId) => {
 };
 
 export const deactivate = async (id) => {
-  await db("users")
-    .where({ id })
-    .update({
-      is_active: false,
-      updated_at: db.fn.now(),
-    });
+  await db("users").where({ id }).update({
+    is_active: false,
+    updated_at: db.fn.now(),
+  });
 };
