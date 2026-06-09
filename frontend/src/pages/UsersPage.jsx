@@ -5,6 +5,8 @@ import { useUserStore } from "../hooks/useUserStore";
 
 import UserEmptyState from "../components/users/UserEmptyState";
 import UserFilters from "../components/users/UserFilters";
+import UserModal from "../components/users/UserModal";
+import UserPagination from "../components/users/UserPagination";
 import UserSkeleton from "../components/users/UserSkeleton";
 import UserTable from "../components/users/UserTable";
 
@@ -89,6 +91,28 @@ function UsersPage() {
       ) : (
         <UserEmptyState />
       )}
+
+      {/* Pagination */}
+      {pagination && (
+        <UserPagination
+          pagination={pagination}
+          onPageChange={(page) =>
+            setFilters({
+              ...filters,
+              page,
+            })
+          }
+        />
+      )}
+
+      {/* Modal */}
+      <UserModal
+        open={isModalOpen}
+        onClose={handleCloseModal}
+        user={selectedUser}
+        inviteUser={inviteUser}
+        updateUser={updateUser}
+      />
     </div>
   );
 }

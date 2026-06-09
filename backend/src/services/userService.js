@@ -38,7 +38,7 @@ export const inviteUser = async ({ email, first_name, last_name, role_id }) => {
   const existingUser = await userRepository.findByEmail(email);
 
   if (existingUser) {
-    throw new AppError("User already exists", 409);
+    throw new Error("User already exists", 409);
   }
 
   const temporaryPassword = Math.random().toString(36).slice(-8);
@@ -52,6 +52,9 @@ export const inviteUser = async ({ email, first_name, last_name, role_id }) => {
     password_hash,
   });
 
+  if (!role_id) {
+    role_id = 4; //for default viewer access
+  }
   await userRepository.assignRole(user.id, role_id);
 
   return {
@@ -64,7 +67,7 @@ export const getUserById = async (id) => {
   const user = await userRepository.findById(id);
 
   if (!user) {
-    throw new AppError("User not found", 404);
+    throw new Error("User not found", 404);
   }
 
   return user;
@@ -74,7 +77,7 @@ export const updateUser = async (id, data) => {
   const user = await userRepository.findById(id);
 
   if (!user) {
-    throw new AppError("User not found", 404);
+    throw new Error("User not found", 404);
   }
 
   await userRepository.update(id, data);
@@ -90,7 +93,7 @@ export const updateUserRoles = async (userId, roleIds) => {
   const user = await userRepository.findById(userId);
 
   if (!user) {
-    throw new AppError("User not found", 404);
+    throw new Error("User not found", 404);
   }
 
   await userRepository.updateRoles(userId, roleIds);
@@ -107,14 +110,11 @@ export const deactivateUser = async (id) => {
   const user = await userRepository.findById(id);
 
   if (!user) {
-    throw new AppError("User not found", 404);
+    throw new Error("User not found", 404);
   }
 
   if (!user.is_active) {
-    throw new AppError(
-      "User is already deactivated",
-      400,
-    );
+    throw new Error("User is already deactivated", 400);
   }
 
   await userRepository.deactivate(id);
