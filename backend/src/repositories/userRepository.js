@@ -131,3 +131,38 @@ export const assignRole = async (userId, roleId) => {
     role_id: roleId,
   });
 };
+
+export const update = async (id, data) => {
+  const payload = {
+    updated_at: db.fn.now(),
+  };
+
+  if (data.first_name !== undefined) {
+    payload.first_name = data.first_name;
+  }
+
+  if (data.last_name !== undefined) {
+    payload.last_name = data.last_name;
+  }
+
+  if (data.email !== undefined) {
+    payload.email = data.email;
+  }
+
+  if (data.is_active !== undefined) {
+    payload.is_active = data.is_active;
+  }
+
+  await db("users").where({ id }).update(payload);
+};
+
+export const updateRole = async (userId, roleId) => {
+  await db("user_roles")
+    .where({ user_id: userId })
+    .del();
+
+  await db("user_roles").insert({
+    user_id: userId,
+    role_id: roleId,
+  });
+};

@@ -69,3 +69,22 @@ export const getUserById = async (id) => {
 
   return user;
 };
+
+export const updateUser = async (id, data) => {
+  const user = await userRepository.findById(id);
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  await userRepository.update(id, data);
+
+  if (data.role_id) {
+    await userRepository.updateRole(
+      id,
+      data.role_id,
+    );
+  }
+
+  return await userRepository.findById(id);
+};
