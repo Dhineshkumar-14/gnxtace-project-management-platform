@@ -40,6 +40,10 @@ export const createProject = async (projectData) => {
     due_date,
   } = projectData;
 
+  if (!ownerId) {
+    throw new Error("Owner is required");
+  }
+
   if (!name?.trim()) {
     throw new Error("Project name is required");
   }
@@ -61,6 +65,10 @@ export const updateProject = async (id, projectData) => {
 
   if (!project) {
     throw new Error("Project not found");
+  }
+
+  if (projectData.name !== undefined && !projectData.name?.trim()) {
+    throw new Error("Project name is required");
   }
 
   await projectRepository.update(id, projectData);

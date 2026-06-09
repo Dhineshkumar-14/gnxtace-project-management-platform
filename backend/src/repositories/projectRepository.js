@@ -47,59 +47,56 @@ export const create = async ({
   ownerId,
   name,
   description,
-  status,
-  start_date,
-  due_date,
+  status = "active",
+  start_date = null,
+  due_date = null,
 }) => {
-  const [result] = await pool.execute(
-    `
-      INSERT INTO projects (
-        owner_id,
-        name,
-        description,
-        status,
-        start_date,
-        due_date
-      )
-      VALUES (?, ?, ?, ?, ?, ?)
-    `,
-    [
-      ownerId,
+  const [project] = await db("projects")
+    .insert({
+      owner_id: ownerId,
       name,
-      description || null,
+      description: description || null,
       status,
-      start_date || null,
-      due_date || null,
-    ],
-  );
+      start_date,
+      due_date,
+    })
+    .returning("id");
 
-  return result.insertId;
+  return project.id;
 };
 
 export const findById = async (id) => {
-  const [rows] = await pool.execute(`SELECT * FROM projects WHERE id = ?`, [
-    id,
-  ]);
-
-  return rows[0] || null;
+  return await db("projects").where({ id }).first();
 };
 
 export const update = async (id, data) => {
-  const { owner_id, name, description, status, start_date, due_date } = data;
+  const payload = {
+    updated_at: db.fn.now(),
+  };
 
-  await pool.execute(
-    `
-      UPDATE projects
-      SET
-        owner_id = ?,
-        name = ?,
-        description = ?,
-        status = ?,
-        start_date = ?,
-        due_date = ?,
-        updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
-    `,
-    [owner_id, name, description, status, start_date, due_date, id],
-  );
+  if (data.owner_id !== undefined) {
+    payload.owner_id = data.owner_id;
+  }
+
+  if (data.name !== undefined) {
+    payload.name = data.name;
+  }
+
+  if (data.description !== undefined) {
+    payload.description = data.description;
+  }
+
+  if (data.status !== undefined) {
+    payload.status = data.status;
+  }
+
+  if (data.start_date !== undefined) {
+    payload.start_date = data.start_date;
+  }
+
+  if (data.due_date !== undefined) {
+    payload.due_date = data.due_date;
+  }
+
+  await db("projects").where({ id }).update(payload);
 };

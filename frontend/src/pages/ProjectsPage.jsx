@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 
 import { useProjectStore } from "../hooks/useProjectStore";
@@ -7,6 +7,7 @@ import ProjectCard from "../components/projects/ProjectCard";
 import ProjectFilters from "../components/projects/ProjectFilters";
 import ProjectPagination from "../components/projects/ProjectPagination";
 import ProjectSkeleton from "../components/projects/ProjectSkeleton";
+import ProjectModal from "../components/projects/ProjectModal";
 
 function ProjectsPage() {
   const {
@@ -15,12 +16,32 @@ function ProjectsPage() {
     filters,
     setFilters,
     fetchProjects,
+    createProject,
+    updateProject,
     isLoading,
   } = useProjectStore();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
     fetchProjects();
   }, [filters]);
+
+  const handleCreateProject = () => {
+    setSelectedProject(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEditProject = (project) => {
+    setSelectedProject(project);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProject(null);
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="space-y-6">
@@ -31,7 +52,10 @@ function ProjectsPage() {
           <p className="text-slate-500">Manage and track all projects</p>
         </div>
 
-        <button className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+        <button
+          onClick={handleCreateProject}
+          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+        >
           <Plus size={18} />
           Create Project
         </button>
@@ -58,7 +82,11 @@ function ProjectsPage() {
       {!isLoading && projects.length > 0 && (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onEdit={() => handleEditProject(project)}
+            />
           ))}
         </div>
       )}
@@ -67,6 +95,14 @@ function ProjectsPage() {
         pagination={pagination}
         filters={filters}
         setFilters={setFilters}
+      />
+
+      <ProjectModal
+        open={isModalOpen}
+        project={selectedProject}
+        onClose={handleCloseModal}
+        createProject={createProject}
+        updateProject={updateProject}
       />
     </div>
   );

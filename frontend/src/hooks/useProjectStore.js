@@ -38,13 +38,73 @@ export const useProjectStore = create((set, get) => ({
       });
 
       set({
-        projects: response?.data?.data,
-        pagination: response.pagination,
+        projects: response?.data?.data || [],
+        pagination: response?.data?.pagination || null,
       });
     } catch (error) {
       set({
         error: error?.response?.data?.message || "Failed to load projects",
       });
+    } finally {
+      set({
+        isLoading: false,
+      });
+    }
+  },
+
+  createProject: async (payload) => {
+    try {
+      set({ isLoading: true, error: null });
+
+      await apiClient.post("/projects", payload);
+
+      await get().fetchProjects();
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      const message =
+        error?.response?.data?.message || "Failed to create project";
+
+      set({
+        error: message,
+      });
+
+      return {
+        success: false,
+        message,
+      };
+    } finally {
+      set({
+        isLoading: false,
+      });
+    }
+  },
+
+  updateProject: async (id, payload) => {
+    try {
+      set({ isLoading: true, error: null });
+
+      await apiClient.put(`/projects/${id}`, payload);
+
+      await get().fetchProjects();
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      const message =
+        error?.response?.data?.message || "Failed to update project";
+
+      set({
+        error: message,
+      });
+
+      return {
+        success: false,
+        message,
+      };
     } finally {
       set({
         isLoading: false,
