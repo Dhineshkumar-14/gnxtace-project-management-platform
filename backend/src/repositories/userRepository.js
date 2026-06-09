@@ -186,3 +186,10 @@ export const deactivate = async (id) => {
     updated_at: db.fn.now(),
   });
 };
+
+export const removeRefreshToken = async (userId) => {
+  return db("users").where({ id: userId }).update({
+    refresh_token: null,
+    updated_at: db.fn.now(),
+  });
+};

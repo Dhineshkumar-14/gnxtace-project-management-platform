@@ -1,4 +1,9 @@
-import { findByEmail, findById, findUserWithRolesAndPermissions } from "../repositories/userRepository.js";
+import {
+  findByEmail,
+  findById,
+  findUserWithRolesAndPermissions,
+  removeRefreshToken,
+} from "../repositories/userRepository.js";
 import { comparePassword } from "../utils/password.js";
 import {
   generateAccessToken,
@@ -36,7 +41,9 @@ export const login = async (email, password) => {
   };
 };
 
-export const logout = async () => {
+export const logout = async (userId) => {
+  await removeRefreshToken(userId);
+
   return {
     success: true,
     message: "Logged out successfully",
