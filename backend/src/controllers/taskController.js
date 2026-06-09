@@ -26,3 +26,17 @@ export const createTask = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateTask = async (req, res, next) => {
+  try {
+    const task = await taskService.updateTask(req.params.id, req.body);
+
+    return res.status(200).json({
+      success: true,
+      message: "Task updated successfully",
+      data: task,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

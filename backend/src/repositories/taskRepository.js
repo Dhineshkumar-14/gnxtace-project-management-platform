@@ -96,3 +96,39 @@ export const count = async (filters) => {
 export const findById = async (id) => {
   return await db("tasks").where({ id }).first();
 };
+
+export const update = async (id, data) => {
+  const payload = {
+    updated_at: db.fn.now(),
+  };
+
+  if (data.project_id !== undefined) {
+    payload.project_id = data.project_id;
+  }
+
+  if (data.assignee_id !== undefined) {
+    payload.assignee_id = data.assignee_id;
+  }
+
+  if (data.title !== undefined) {
+    payload.title = data.title;
+  }
+
+  if (data.description !== undefined) {
+    payload.description = data.description;
+  }
+
+  if (data.status !== undefined) {
+    payload.status = data.status;
+  }
+
+  if (data.priority !== undefined) {
+    payload.priority = data.priority;
+  }
+
+  if (data.due_date !== undefined) {
+    payload.due_date = data.due_date;
+  }
+
+  await db("tasks").where({ id }).update(payload);
+};
