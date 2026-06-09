@@ -1,9 +1,9 @@
 import { Router } from "express";
 
-import * as projectController from "../controllers/projectController.js";
 
 import { authorize } from "../middleware/authorize.js";
 import { authenticate } from "../middleware/authMiddleware.js";
+import { createProject, getProjects, updateProject } from "../controllers/projectController.js";
 
 const router = Router();
 
@@ -11,14 +11,21 @@ router.get(
   "/",
   authenticate,
   authorize("projects:read"),
-  projectController.getProjects,
+  getProjects,
 );
 
 router.post(
   "/",
   authenticate,
   authorize("projects:create"),
-  projectController.createProject,
+  createProject,
+);
+
+router.put(
+  "/:id",
+  authenticate,
+  authorize("projects:update"),
+  updateProject,
 );
 
 export default router;

@@ -83,3 +83,23 @@ export const findById = async (id) => {
 
   return rows[0] || null;
 };
+
+export const update = async (id, data) => {
+  const { owner_id, name, description, status, start_date, due_date } = data;
+
+  await pool.execute(
+    `
+      UPDATE projects
+      SET
+        owner_id = ?,
+        name = ?,
+        description = ?,
+        status = ?,
+        start_date = ?,
+        due_date = ?,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `,
+    [owner_id, name, description, status, start_date, due_date, id],
+  );
+};

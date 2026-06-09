@@ -31,3 +31,17 @@ export const createProject = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateProject = async (req, res, next) => {
+  try {
+    const project = await projectService.updateProject(req.params.id, req.body);
+
+    return res.status(200).json({
+      success: true,
+      message: "Project updated successfully",
+      data: project,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

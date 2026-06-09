@@ -55,3 +55,15 @@ export const createProject = async (projectData) => {
 
   return await projectRepository.findById(projectId);
 };
+
+export const updateProject = async (id, projectData) => {
+  const project = await projectRepository.findById(id);
+
+  if (!project) {
+    throw new Error("Project not found");
+  }
+
+  await projectRepository.update(id, projectData);
+
+  return await projectRepository.findById(id);
+};
