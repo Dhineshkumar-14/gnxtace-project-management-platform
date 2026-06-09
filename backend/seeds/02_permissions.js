@@ -34,24 +34,30 @@ export async function seed(knex) {
     },
     {
       id: 6,
+      name: "tasks:read",
+      resource: "tasks",
+      action: "read",
+    },
+    {
+      id: 7,
       name: "tasks:update",
       resource: "tasks",
       action: "update",
     },
     {
-      id: 7,
+      id: 8,
       name: "tasks:delete",
       resource: "tasks",
       action: "delete",
     },
     {
-      id: 8,
+      id: 9,
       name: "users:manage",
       resource: "users",
       action: "manage",
     },
     {
-      id: 9,
+      id: 10,
       name: "reports:view",
       resource: "reports",
       action: "view",

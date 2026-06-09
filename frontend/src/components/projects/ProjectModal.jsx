@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Calendar, FileText, FolderKanban, X } from "lucide-react";
+import { X } from "lucide-react";
 
 import { formatInputDate } from "../../utils/formatInputDate";
 import { errorToast, successToast } from "../../utils/toast";
@@ -13,15 +13,16 @@ function ProjectModal({
 }) {
   const isEdit = Boolean(project);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     name: "",
     description: "",
     status: "active",
     start_date: "",
     due_date: "",
-  });
+  };
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState(initialFormData);
 
   useEffect(() => {
     if (project) {
@@ -33,15 +34,9 @@ function ProjectModal({
         due_date: formatInputDate(project.due_date),
       });
     } else {
-      setFormData({
-        name: "",
-        description: "",
-        status: "active",
-        start_date: "",
-        due_date: "",
-      });
+      setFormData(initialFormData);
     }
-  }, [project]);
+  }, [project, open]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -67,23 +62,17 @@ function ProjectModal({
     try {
       setIsSubmitting(true);
 
-      let result;
-
-      if (isEdit) {
-        result = await updateProject(project.id, formData);
-
-        if (result?.success) {
-          successToast("Project updated successfully");
-        }
-      } else {
-        result = await createProject(formData);
-
-        if (result?.success) {
-          successToast("Project created successfully");
-        }
-      }
+      const result = isEdit
+        ? await updateProject(project.id, formData)
+        : await createProject(formData);
 
       if (result?.success) {
+        successToast(
+          isEdit
+            ? "Project updated successfully"
+            : "Project created successfully",
+        );
+
         onClose();
       } else {
         errorToast(result?.message || "Something went wrong");
@@ -102,165 +91,137 @@ function ProjectModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-      <div className="flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-xl">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-400 to-indigo-500 px-6 py-5 text-white">
-          <div className="flex items-start justify-between">
-            <div>
-              <h2 className="text-2xl font-bold">
-                {isEdit ? "Update Project" : "Create Project"}
-              </h2>
+        <div className="flex items-center justify-between border-b px-5 py-4">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">
+              {isEdit ? "Edit Project" : "Create Project"}
+            </h2>
 
-              <p className="mt-1 text-sm text-blue-100">
-                {isEdit
-                  ? "Modify project details and schedule"
-                  : "Create a new project and start tracking progress"}
-              </p>
-            </div>
-
-            <button
-              onClick={onClose}
-              className="rounded-xl p-2 transition hover:bg-white/10"
-            >
-              <X size={20} />
-            </button>
+            <p className="text-sm text-slate-500">
+              {isEdit ? "Update project information" : "Create a new project"}
+            </p>
           </div>
+
+          <button
+            onClick={onClose}
+            className="rounded-lg p-2 transition hover:bg-slate-100"
+          >
+            <X size={18} />
+          </button>
         </div>
 
         {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-1 flex-col overflow-hidden"
-        >
-          <div className="flex-1 overflow-y-auto p-6">
-            <div className="space-y-6">
-              {/* Project Details */}
-              <div className="rounded-2xl border border-slate-200 p-5">
-                <div className="mb-5 flex items-center gap-2">
-                  <FolderKanban size={18} />
-                  <h3 className="font-semibold text-slate-900">
-                    Project Details
-                  </h3>
-                </div>
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-4 p-5">
+            {/* Project Name */}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">
+                Project Name *
+              </label>
 
-                <div className="space-y-5">
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-slate-700">
-                      Project Name *
-                    </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Inventory Management System"
+                required
+                className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              />
+            </div>
 
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      placeholder="Inventory Management System"
-                      className="w-full rounded-xl border border-slate-300 px-4 py-3 transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100"
-                      required
-                    />
-                  </div>
+            {/* Status */}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">
+                Status
+              </label>
 
-                  <div>
-                    <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
-                      <FileText size={16} />
-                      Description
-                    </label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              >
+                <option value="active">Active</option>
+                <option value="on_hold">On Hold</option>
+                <option value="completed">Completed</option>
+                <option value="archived">Archived</option>
+              </select>
+            </div>
 
-                    <textarea
-                      rows={3}
-                      name="description"
-                      value={formData.description}
-                      onChange={handleChange}
-                      placeholder="Enter project description..."
-                      className="min-h-[100px] w-full resize-none rounded-xl border border-slate-300 px-4 py-3 transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100"
-                    />
-                  </div>
+            {/* Description */}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">
+                Description
+              </label>
 
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-slate-700">
-                      Status
-                    </label>
+              <textarea
+                rows={3}
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="Enter project description..."
+                className="w-full resize-none rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              />
+            </div>
 
-                    <select
-                      name="status"
-                      value={formData.status}
-                      onChange={handleChange}
-                      className="w-full rounded-xl border border-slate-300 px-4 py-3 transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100"
-                    >
-                      <option value="active">🟢 Active</option>
-                      <option value="on_hold">🟡 On Hold</option>
-                      <option value="completed">🔵 Completed</option>
-                      <option value="archived">⚫ Archived</option>
-                    </select>
-                  </div>
-                </div>
+            {/* Dates */}
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  Start Date
+                </label>
+
+                <input
+                  type="date"
+                  name="start_date"
+                  value={formData.start_date}
+                  onChange={handleChange}
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                />
               </div>
 
-              {/* Schedule */}
-              <div className="rounded-2xl border border-slate-200 p-5">
-                <div className="mb-5 flex items-center gap-2">
-                  <Calendar size={18} />
-                  <h3 className="font-semibold text-slate-900">Schedule</h3>
-                </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  Due Date
+                </label>
 
-                <div className="grid gap-5 md:grid-cols-2">
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-slate-700">
-                      Start Date
-                    </label>
-
-                    <input
-                      type="date"
-                      name="start_date"
-                      value={formData.start_date}
-                      onChange={handleChange}
-                      className="w-full rounded-xl border border-slate-300 px-4 py-3 transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-slate-700">
-                      Due Date
-                    </label>
-
-                    <input
-                      type="date"
-                      name="due_date"
-                      value={formData.due_date}
-                      onChange={handleChange}
-                      className="w-full rounded-xl border border-slate-300 px-4 py-3 transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100"
-                    />
-                  </div>
-                </div>
+                <input
+                  type="date"
+                  name="due_date"
+                  value={formData.due_date}
+                  onChange={handleChange}
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                />
               </div>
             </div>
           </div>
 
           {/* Footer */}
-          <div className="border-t bg-slate-50 px-6 py-4">
-            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={isSubmitting}
-                className="rounded-xl border border-slate-300 px-5 py-3 font-medium transition hover:bg-slate-100"
-              >
-                Cancel
-              </button>
+          <div className="flex justify-end gap-3 border-t bg-slate-50 px-5 py-3">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isSubmitting}
+              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-100"
+            >
+              Cancel
+            </button>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="rounded-xl bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isSubmitting
-                  ? "Saving..."
-                  : isEdit
-                    ? "Update Project"
-                    : "Create Project"}
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            >
+              {isSubmitting
+                ? "Saving..."
+                : isEdit
+                  ? "Update Project"
+                  : "Create Project"}
+            </button>
           </div>
         </form>
       </div>

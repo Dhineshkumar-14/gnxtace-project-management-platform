@@ -12,6 +12,7 @@ export async function seed(knex) {
     { role_id: 1, permission_id: 7 },
     { role_id: 1, permission_id: 8 },
     { role_id: 1, permission_id: 9 },
+    { role_id: 1, permission_id: 10 },
 
     // MANAGER
     { role_id: 2, permission_id: 1 },
@@ -20,7 +21,8 @@ export async function seed(knex) {
     { role_id: 2, permission_id: 5 },
     { role_id: 2, permission_id: 6 },
     { role_id: 2, permission_id: 7 },
-    { role_id: 2, permission_id: 9 },
+    { role_id: 2, permission_id: 8 },
+    { role_id: 2, permission_id: 10 },
 
     // MEMBER
     { role_id: 3, permission_id: 2 },
@@ -29,5 +31,6 @@ export async function seed(knex) {
 
     // VIEWER
     { role_id: 4, permission_id: 2 },
+    { role_id: 4, permission_id: 5 },
   ]);
 }

@@ -6,6 +6,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 
 import DashboardLayout from "../layouts/DashboardLayout";
 import ProjectsPage from "../pages/ProjectsPage";
+import TasksPage from "../pages/TasksPage";
 
 function AppRouter() {
   return (
@@ -18,7 +19,7 @@ function AppRouter() {
 
           <Route path="/projects" element={<ProjectsPage />} />
 
-          <Route path="/tasks" element={<div>TasksPage</div>} />
+          <Route path="/tasks" element={<TasksPage />} />
 
           <Route path="/users" element={<div>UsersPage </div>} />
         </Route>
