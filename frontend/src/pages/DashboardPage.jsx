@@ -15,7 +15,7 @@ function DashboardPage() {
 
   useEffect(() => {
     fetchDashboard();
-  }, []);
+  }, [fetchDashboard]);
 
   if (isLoading) {
     return <DashboardSkeleton />;
