@@ -88,19 +88,26 @@ function ProjectsPage() {
     setIsDetailsOpen(false);
   };
   return (
-    <div className="space-y-6">
+    <div className="w-full min-w-0 space-y-4 px-4 sm:px-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Projects</h1>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-xl font-bold sm:text-2xl">Projects</h1>
 
-          <p className="text-slate-500">Manage and track all projects</p>
+          <p className="text-sm text-slate-500 sm:text-base">
+            Manage and track all projects
+          </p>
         </div>
 
         {canCreateProject && (
           <button
             onClick={handleCreateProject}
-            className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
+            className="
+            flex w-full items-center justify-center gap-2
+            rounded-lg bg-blue-600 px-4 py-2 text-white
+            transition hover:bg-blue-700
+            sm:w-auto
+          "
           >
             <Plus size={18} />
             Create Project
@@ -113,7 +120,7 @@ function ProjectsPage() {
 
       {/* Loading */}
       {isLoading && (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {[1, 2, 3, 4].map((item) => (
             <ProjectSkeleton key={item} />
           ))}
@@ -122,24 +129,26 @@ function ProjectsPage() {
 
       {/* Empty State */}
       {!isLoading && projects.length === 0 && (
-        <div className="rounded-xl border border-dashed bg-white py-16 text-center">
+        <div className="rounded-xl border border-dashed bg-white py-12 text-center sm:py-16">
           <h3 className="text-lg font-medium">No projects found</h3>
 
           <p className="text-slate-500">Try changing your filters</p>
         </div>
       )}
 
-      {/* Projects */}
+      {/* Table */}
       {!isLoading && projects.length > 0 && (
-        <ProjectsTable
-          projects={projects}
-          canView={hasPermission(user, "projects:read")}
-          canEdit={canUpdateProject}
-          canDelete={canDeleteProject}
-          onView={handleViewProject}
-          onEdit={handleEditProject}
-          onDelete={handleDeleteProject}
-        />
+        <div className="overflow-hidden rounded-xl  bg-white">
+          <ProjectsTable
+            projects={projects}
+            canView={hasPermission(user, "projects:read")}
+            canEdit={canUpdateProject}
+            canDelete={canDeleteProject}
+            onView={handleViewProject}
+            onEdit={handleEditProject}
+            onDelete={handleDeleteProject}
+          />
+        </div>
       )}
 
       {/* Pagination */}
@@ -149,7 +158,6 @@ function ProjectsPage() {
         setFilters={setFilters}
       />
 
-      {/* Modal */}
       <ProjectModal
         open={isModalOpen}
         project={selectedProject}
@@ -157,7 +165,7 @@ function ProjectsPage() {
         createProject={createProject}
         updateProject={updateProject}
       />
-      {/* Modal */}
+
       <ProjectDetailsModal
         open={isDetailsOpen}
         project={selectedProject}

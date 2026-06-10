@@ -3,6 +3,7 @@ import apiClient from "../services/apiClient";
 
 export const useTaskStore = create((set, get) => ({
   tasks: [],
+  selectedTask: null,
   pagination: null,
 
   filters: {
@@ -15,6 +16,7 @@ export const useTaskStore = create((set, get) => ({
   },
 
   isLoading: false,
+  isDetailsLoading: false,
   error: null,
 
   setFilters: (filters) => {
@@ -53,6 +55,49 @@ export const useTaskStore = create((set, get) => ({
       });
     }
   },
+
+  fetchTaskById: async (id) => {
+    try {
+      set({
+        isDetailsLoading: true,
+        error: null,
+      });
+
+      const response = await apiClient.get(`/tasks/${id}`);
+
+      set({
+        selectedTask: response?.data?.data || response?.data,
+      });
+
+      return {
+        success: true,
+        data: response?.data?.data || response?.data,
+      };
+    } catch (error) {
+      const message =
+        error?.response?.data?.message || "Failed to load task details";
+
+      set({
+        error: message,
+      });
+
+      return {
+        success: false,
+        message,
+      };
+    } finally {
+      set({
+        isDetailsLoading: false,
+      });
+    }
+  },
+
+  clearSelectedTask: () => {
+    set({
+      selectedTask: null,
+    });
+  },
+
   createTask: async (payload) => {
     try {
       set({
@@ -116,6 +161,7 @@ export const useTaskStore = create((set, get) => ({
       });
     }
   },
+
   deleteTask: async (id) => {
     try {
       set({

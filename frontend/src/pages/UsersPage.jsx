@@ -104,22 +104,24 @@ function UsersPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Users</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Users</h1>
 
-          <p className="text-slate-500">
-            Manage users, roles, and account access
+          <p className="mt-1 text-sm text-slate-500">
+            Manage users, roles and account access
           </p>
         </div>
 
         {canInviteUser && (
           <button
             onClick={handleCreateUser}
-            className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white transition hover:bg-blue-700 md:h-auto md:w-auto md:px-4 md:py-2"
+            title="Invite User"
           >
             <Plus size={18} />
-            Invite User
+
+            <span className="hidden md:inline md:ml-2">Invite User</span>
           </button>
         )}
       </div>
