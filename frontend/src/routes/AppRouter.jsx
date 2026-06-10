@@ -1,4 +1,4 @@
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import LoginPage from "../pages/LoginPage";
 import DashboardPage from "../pages/DashboardPage";
@@ -14,7 +14,7 @@ import RedirectIfAuth from "../components/RedirectIfAuth";
 function AppRouter() {
   return (
     <Routes>
-      {/* Public */}
+      {/* Public Routes */}
       <Route
         path="/login"
         element={
@@ -24,23 +24,21 @@ function AppRouter() {
         }
       />
 
-      {/* Protected */}
+      {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/tasks" element={<TasksPage />} />
+          <Route index element={<DashboardPage />} />
+          <Route path="projects" element={<ProjectsPage />} />
+          <Route path="tasks" element={<TasksPage />} />
+
+          {/* Admin Routes */}
+          <Route element={<ProtectedRoute requiredPermission="users:manage" />}>
+            <Route path="users" element={<UsersPage />} />
+          </Route>
         </Route>
       </Route>
 
-      {/* Admin Only */}
-      <Route element={<ProtectedRoute requiredPermission="users:manage" />}>
-        <Route element={<DashboardLayout />}>
-          <Route path="/users" element={<UsersPage />} />
-        </Route>
-      </Route>
-
-      {/* Fallback */}
+      {/* Catch All */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

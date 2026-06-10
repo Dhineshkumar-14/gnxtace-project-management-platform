@@ -1,6 +1,16 @@
 import { create } from "zustand";
 import apiClient from "../services/apiClient";
 
+const INITIAL_FILTERS = {
+  page: 1,
+  limit: 10,
+  search: "",
+  roleId: "",
+  isActive: "",
+};
+
+const getErrorMessage = (error) =>
+  error?.response?.data?.message || error?.message || "Something went wrong";
 
 export const useUserStore = create((set, get) => ({
   users: [],
@@ -9,13 +19,7 @@ export const useUserStore = create((set, get) => ({
   isLoading: false,
   error: null,
 
-  filters: {
-    page: 1,
-    limit: 10,
-    search: "",
-    roleId: "",
-    isActive: "",
-  },
+  filters: INITIAL_FILTERS,
 
   pagination: null,
 
@@ -24,8 +28,19 @@ export const useUserStore = create((set, get) => ({
       filters: {
         ...state.filters,
         ...newFilters,
+        page:
+          "search" in newFilters ||
+          "roleId" in newFilters ||
+          "isActive" in newFilters
+            ? 1
+            : state.filters.page,
       },
     })),
+
+  resetFilters: () =>
+    set({
+      filters: INITIAL_FILTERS,
+    }),
 
   clearSelectedUser: () =>
     set({
@@ -51,7 +66,7 @@ export const useUserStore = create((set, get) => ({
       });
     } catch (error) {
       set({
-        error: error?.response?.data?.message || error.message,
+        error: getErrorMessage(error),
       });
     } finally {
       set({
@@ -62,6 +77,11 @@ export const useUserStore = create((set, get) => ({
 
   fetchUserById: async (id) => {
     try {
+      set({
+        isLoading: true,
+        error: null,
+      });
+
       const response = await apiClient.get(`/users/${id}`);
 
       set({
@@ -75,13 +95,22 @@ export const useUserStore = create((set, get) => ({
     } catch (error) {
       return {
         success: false,
-        message: error?.response?.data?.message || error.message,
+        message: getErrorMessage(error),
       };
+    } finally {
+      set({
+        isLoading: false,
+      });
     }
   },
 
   inviteUser: async (payload) => {
     try {
+      set({
+        isLoading: true,
+        error: null,
+      });
+
       const response = await apiClient.post("/users/invite", payload);
 
       await get().fetchUsers();
@@ -93,14 +122,27 @@ export const useUserStore = create((set, get) => ({
     } catch (error) {
       return {
         success: false,
-        message: error?.response?.data?.message || error.message,
+        message: getErrorMessage(error),
       };
+    } finally {
+      set({
+        isLoading: false,
+      });
     }
   },
 
   updateUser: async (id, payload) => {
     try {
+      set({
+        isLoading: true,
+        error: null,
+      });
+
       const response = await apiClient.put(`/users/${id}`, payload);
+
+      set({
+        selectedUser: response.data.data,
+      });
 
       await get().fetchUsers();
 
@@ -111,13 +153,22 @@ export const useUserStore = create((set, get) => ({
     } catch (error) {
       return {
         success: false,
-        message: error?.response?.data?.message || error.message,
+        message: getErrorMessage(error),
       };
+    } finally {
+      set({
+        isLoading: false,
+      });
     }
   },
 
   updateUserRoles: async (id, roleIds) => {
     try {
+      set({
+        isLoading: true,
+        error: null,
+      });
+
       const response = await apiClient.put(`/users/${id}/roles`, {
         role_ids: roleIds,
       });
@@ -131,13 +182,22 @@ export const useUserStore = create((set, get) => ({
     } catch (error) {
       return {
         success: false,
-        message: error?.response?.data?.message || error.message,
+        message: getErrorMessage(error),
       };
+    } finally {
+      set({
+        isLoading: false,
+      });
     }
   },
 
   deactivateUser: async (id) => {
     try {
+      set({
+        isLoading: true,
+        error: null,
+      });
+
       const response = await apiClient.delete(`/users/${id}`);
 
       await get().fetchUsers();
@@ -149,8 +209,12 @@ export const useUserStore = create((set, get) => ({
     } catch (error) {
       return {
         success: false,
-        message: error?.response?.data?.message || error.message,
+        message: getErrorMessage(error),
       };
+    } finally {
+      set({
+        isLoading: false,
+      });
     }
   },
 }));

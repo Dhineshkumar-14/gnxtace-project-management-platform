@@ -17,7 +17,10 @@ export const logout = async (req, res, next) => {
   try {
     const result = await authService.logout(req.user.id);
 
-    return res.status(200).json(result);
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
   } catch (error) {
     next(error);
   }
@@ -41,16 +44,13 @@ export const refreshToken = async (req, res, next) => {
       data: result,
     });
   } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: "Invalid refresh token",
-    });
+    next(error);
   }
 };
 
 export const getCurrentUser = async (req, res, next) => {
   try {
-    const user = await authService.getCurrentUser(req.user.userId);
+    const user = await authService.getCurrentUser(req.user.id);
 
     return res.status(200).json({
       success: true,

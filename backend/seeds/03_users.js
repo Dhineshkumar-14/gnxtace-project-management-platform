@@ -5,6 +5,7 @@ export async function seed(knex) {
 
   const adminPasswordHash = await bcrypt.hash("Admin@123", 12);
   const passwordHash = await bcrypt.hash("User@1234", 12);
+
   await knex("users").insert([
     {
       id: 1,
@@ -13,6 +14,8 @@ export async function seed(knex) {
       first_name: "System",
       last_name: "Administrator",
       is_active: true,
+      refresh_token: null,
+      refresh_token_expires_at: null,
     },
     {
       id: 2,
@@ -21,6 +24,8 @@ export async function seed(knex) {
       first_name: "Project",
       last_name: "Manager",
       is_active: true,
+      refresh_token: null,
+      refresh_token_expires_at: null,
     },
     {
       id: 3,
@@ -29,6 +34,8 @@ export async function seed(knex) {
       first_name: "Team",
       last_name: "Member",
       is_active: true,
+      refresh_token: null,
+      refresh_token_expires_at: null,
     },
     {
       id: 4,
@@ -37,6 +44,8 @@ export async function seed(knex) {
       first_name: "Report",
       last_name: "Viewer",
       is_active: true,
+      refresh_token: null,
+      refresh_token_expires_at: null,
     },
   ]);
 }
