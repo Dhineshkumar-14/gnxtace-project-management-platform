@@ -10,12 +10,18 @@ import {
   updateTask,
   updateTaskStatus,
 } from "../controllers/taskController.js";
+import {
+  createTaskSchema,
+  updateTaskSchema,
+} from "../validations/taskValidation.js";
+import { validate } from "../middleware/validate.js";
 
 const router = Router();
 
 router.get("/", authenticate, authorize("tasks:read"), getTasks);
-router.post("/", authenticate, authorize("tasks:create"), createTask);
-router.put("/:id", authenticate, authorize("tasks:update"), updateTask);
+router.post("/", authenticate, validate(createTaskSchema), createTask);
+
+router.put("/:id", authenticate, validate(updateTaskSchema), updateTask);
 router.patch(
   "/:id/status",
   authenticate,
