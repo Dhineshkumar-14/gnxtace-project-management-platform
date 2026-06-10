@@ -12,6 +12,7 @@ import dashboardRoutes from "./routes/dashboardRoutes.js";
 
 import ApiError from "./utils/ApiError.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { generalLimiter } from "./middleware/rateLimiter.js";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use(morgan("dev"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(generalLimiter);
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/projects", projectRoutes);
@@ -31,9 +33,11 @@ app.use("/api/v1/tasks", taskRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 
-app.use("*", (req, res, next) => {
-  next(new ApiError(404, "Route not found"));
+app.use((req, res, next) => {
+  next(new ApiError(404, `URL ${req.originalUrl} not found on this server`));
 });
+
+app.use(errorHandler);
 
 app.use(errorHandler);
 
