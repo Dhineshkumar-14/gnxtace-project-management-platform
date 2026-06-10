@@ -105,6 +105,16 @@ export const refreshAccessToken = async (refreshToken) => {
     throw new ApiError(401, "Invalid refresh token");
   }
 
+  // Refresh Token Expiry Check
+  if (
+    !user.refresh_token_expires_at ||
+    new Date(user.refresh_token_expires_at) < new Date()
+  ) {
+    await removeRefreshToken(user.id);
+
+    throw new ApiError(401, "Refresh token expired");
+  }
+
   const payload = {
     userId: user.id,
     email: user.email,
@@ -112,6 +122,7 @@ export const refreshAccessToken = async (refreshToken) => {
 
   const accessToken = generateAccessToken(payload);
 
+  // Refresh Token Rotation
   const newRefreshToken = generateRefreshToken(payload);
 
   const refreshTokenExpiresAt = new Date();

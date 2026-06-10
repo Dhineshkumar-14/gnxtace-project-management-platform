@@ -1,47 +1,57 @@
 import { z } from "zod";
 
 export const inviteUserSchema = z.object({
-  body: z.object({
-    email: z.string().email("Valid email is required"),
+  body: z
+    .object({
+      email: z.string().email("Valid email is required"),
 
-    first_name: z
-      .string()
-      .min(2, "First name must be at least 2 characters")
-      .max(100),
+      first_name: z
+        .string()
+        .min(2, "First name must be at least 2 characters")
+        .max(100),
 
-    last_name: z
-      .string()
-      .min(2, "Last name must be at least 2 characters")
-      .max(100),
+      last_name: z
+        .string()
+        .min(2, "Last name must be at least 2 characters")
+        .max(100),
 
-    role_ids: z.array(z.number()).optional(),
-  }).strict,
+      role_ids: z.array(z.number()).optional(),
+    })
+    .strict(),
 });
 
 export const updateUserSchema = z.object({
-  body: z.object({
-    email: z.string().email().optional(),
+  body: z
+    .object({
+      email: z.string().email().optional(),
 
-    first_name: z.string().min(2).max(100).optional(),
+      first_name: z.string().min(2).max(100).optional(),
 
-    last_name: z.string().min(2).max(100).optional(),
+      last_name: z.string().min(2).max(100).optional(),
 
-    is_active: z.boolean().optional(),
+      is_active: z.boolean().optional(),
 
-    role_ids: z.array(z.number()).optional(),
-  }),
+      role_ids: z.array(z.number()).optional(),
+    })
+    .strict(),
 
-  params: z.object({
-    id: z.coerce.number().positive(),
-  }).strict,
+  params: z
+    .object({
+      id: z.coerce.number().positive(),
+    })
+    .strict(),
 });
 
 export const updateUserRolesSchema = z.object({
-  body: z.object({
-    role_ids: z.array(z.number()).min(1, "At least one role is required"),
-  }),
+  body: z
+    .object({
+      role_ids: z.array(z.number()).min(1, "At least one role is required"),
+    })
+    .strict(),
 
-  params: z.object({
-    id: z.coerce.number().positive(),
-  }).strict,
+  params: z
+    .object({
+      id: z.coerce.number().positive(),
+    })
+    .strict(),
 });
