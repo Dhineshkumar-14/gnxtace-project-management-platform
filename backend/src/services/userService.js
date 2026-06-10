@@ -87,8 +87,8 @@ export const updateUser = async (id, data) => {
 
   await userRepository.update(id, data);
 
-  if (data.role_id) {
-    await userRepository.updateRoles(id, data.role_id);
+  if (data.role_ids) {
+    await userRepository.updateRoles(id, data.role_ids);
   }
 
   return await userRepository.findById(id);

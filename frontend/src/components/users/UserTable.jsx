@@ -38,10 +38,6 @@ function UserTable({
                 Status
               </th>
 
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Last Login
-              </th>
-
               <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Actions
               </th>
@@ -66,10 +62,6 @@ function UserTable({
                       <p className="font-medium text-slate-900">
                         {user.first_name} {user.last_name}
                       </p>
-
-                      <p className="text-xs text-slate-500">
-                        User ID #{user.id}
-                      </p>
                     </div>
                   </div>
                 </td>
@@ -81,9 +73,22 @@ function UserTable({
 
                 {/* Role */}
                 <td className="px-4 py-4">
-                  <span className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
-                    {user.role_name || "No Role"}
-                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {user.roles?.length ? (
+                      user.roles.map((role) => (
+                        <span
+                          key={role.id}
+                          className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700"
+                        >
+                          {role.name}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                        No Role
+                      </span>
+                    )}
+                  </div>
                 </td>
 
                 {/* Status */}
@@ -95,13 +100,6 @@ function UserTable({
                   >
                     {user.is_active ? "Active" : "Inactive"}
                   </span>
-                </td>
-
-                {/* Last Login */}
-                <td className="px-4 py-4 text-sm text-slate-700">
-                  {user.last_login_at
-                    ? formatDate(user.last_login_at)
-                    : "Never Logged In"}
                 </td>
 
                 {/* Actions */}

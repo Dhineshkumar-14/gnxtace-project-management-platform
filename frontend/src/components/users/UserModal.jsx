@@ -33,7 +33,7 @@ function UserModal({ open, onClose, user, inviteUser, updateUser }) {
         first_name: user.first_name || "",
         last_name: user.last_name || "",
         email: user.email || "",
-        role_ids: user.role_ids || [],
+        role_ids: user.role_ids || user.roles?.map((role) => role.id) || [],
         is_active: user.is_active ?? true,
       });
     } else {
@@ -238,26 +238,7 @@ function UserModal({ open, onClose, user, inviteUser, updateUser }) {
                 ))}
               </div>
             </section>
-
-            {/* Status */}
-            {isEdit && (
-              <section>
-                <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">
-                  Status
-                </h3>
-
-                <select
-                  name="is_active"
-                  value={String(formData.is_active)}
-                  onChange={handleChange}
-                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100"
-                >
-                  <option value="true">Active</option>
-                  <option value="false">Inactive</option>
-                </select>
-              </section>
-            )}
-          </div>
+            </div>
 
           {/* Footer */}
           <div className="flex justify-end gap-3 border-t bg-slate-50 px-6 py-4">
