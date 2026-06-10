@@ -1,5 +1,9 @@
-import * as userRepository from "../repositories/userRepository.js";
+import crypto from "crypto";
 import bcrypt from "bcryptjs";
+
+import * as userRepository from "../repositories/userRepository.js";
+
+const DEFAULT_MEMBER_ROLE_ID = 3;
 
 export const getUsers = async ({
   page = 1,
@@ -43,10 +47,12 @@ export const inviteUser = async ({
   const existingUser = await userRepository.findByEmail(email);
 
   if (existingUser) {
-    throw new Error("User already exists", 409);
+    const error = new Error("User already exists");
+    error.statusCode = 409;
+    throw error;
   }
 
-  const temporaryPassword = Math.random().toString(36).slice(-8);
+  const temporaryPassword = crypto.randomBytes(8).toString("hex");
 
   const password_hash = await bcrypt.hash(temporaryPassword, 10);
 
@@ -57,10 +63,12 @@ export const inviteUser = async ({
     password_hash,
   });
 
-  if (!role_ids) {
-    role_ids = [3]; //for default member access
-  }
-  await userRepository.updateRoles(user.id, role_ids);
+  const roles =
+    Array.isArray(role_ids) && role_ids.length > 0
+      ? role_ids
+      : [DEFAULT_MEMBER_ROLE_ID];
+
+  await userRepository.updateRoles(user.id, roles);
 
   return {
     user,
@@ -72,7 +80,9 @@ export const getUserById = async (id) => {
   const user = await userRepository.findById(id);
 
   if (!user) {
-    throw new Error("User not found", 404);
+    const error = new Error("User not found");
+    error.statusCode = 404;
+    throw error;
   }
 
   return user;
@@ -82,23 +92,27 @@ export const updateUser = async (id, data) => {
   const user = await userRepository.findById(id);
 
   if (!user) {
-    throw new Error("User not found", 404);
+    const error = new Error("User not found");
+    error.statusCode = 404;
+    throw error;
   }
 
   await userRepository.update(id, data);
 
-  if (data.role_ids) {
+  if (Array.isArray(data.role_ids)) {
     await userRepository.updateRoles(id, data.role_ids);
   }
 
-  return await userRepository.findById(id);
+  return userRepository.findById(id);
 };
 
 export const updateUserRoles = async (userId, roleIds) => {
   const user = await userRepository.findById(userId);
 
   if (!user) {
-    throw new Error("User not found", 404);
+    const error = new Error("User not found");
+    error.statusCode = 404;
+    throw error;
   }
 
   await userRepository.updateRoles(userId, roleIds);
@@ -115,14 +129,21 @@ export const deactivateUser = async (id) => {
   const user = await userRepository.findById(id);
 
   if (!user) {
-    throw new Error("User not found", 404);
+    const error = new Error("User not found");
+    error.statusCode = 404;
+    throw error;
   }
 
   if (!user.is_active) {
-    throw new Error("User is already deactivated", 400);
+    const error = new Error("User is already deactivated");
+    error.statusCode = 400;
+    throw error;
   }
 
-  await userRepository.deactivate(id);
+  await Promise.all([
+    userRepository.deactivate(id),
+    userRepository.removeRefreshToken(id),
+  ]);
 
   return {
     id,

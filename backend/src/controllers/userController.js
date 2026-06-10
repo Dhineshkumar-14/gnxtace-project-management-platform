@@ -1,4 +1,5 @@
 import * as userService from "../services/userService.js";
+
 export const getUsers = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, search, roleId, isActive } = req.query;
@@ -39,7 +40,9 @@ export const inviteUser = async (req, res, next) => {
 
 export const getUserById = async (req, res, next) => {
   try {
-    const user = await userService.getUserById(Number(req.params.id));
+    const userId = Number(req.params.id);
+
+    const user = await userService.getUserById(userId);
 
     return res.status(200).json({
       success: true,
@@ -52,7 +55,9 @@ export const getUserById = async (req, res, next) => {
 
 export const updateUser = async (req, res, next) => {
   try {
-    const user = await userService.updateUser(Number(req.params.id), req.body);
+    const userId = Number(req.params.id);
+
+    const user = await userService.updateUser(userId, req.body);
 
     return res.status(200).json({
       success: true,
@@ -66,12 +71,10 @@ export const updateUser = async (req, res, next) => {
 
 export const updateUserRoles = async (req, res, next) => {
   try {
-    const roleIds = req.body.role_ids || [];
+    const userId = Number(req.params.id);
+    const roleIds = req.body.role_ids ?? [];
 
-    const result = await userService.updateUserRoles(
-      Number(req.params.id),
-      roleIds,
-    );
+    const result = await userService.updateUserRoles(userId, roleIds);
 
     return res.status(200).json({
       success: true,
@@ -85,7 +88,9 @@ export const updateUserRoles = async (req, res, next) => {
 
 export const deactivateUser = async (req, res, next) => {
   try {
-    const result = await userService.deactivateUser(Number(req.params.id));
+    const userId = Number(req.params.id);
+
+    const result = await userService.deactivateUser(userId);
 
     return res.status(200).json({
       success: true,
