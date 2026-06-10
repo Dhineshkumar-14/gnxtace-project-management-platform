@@ -28,16 +28,7 @@ export const logout = async (req, res, next) => {
 
 export const refreshToken = async (req, res, next) => {
   try {
-    const { refreshToken } = req.body;
-
-    if (!refreshToken) {
-      return res.status(400).json({
-        success: false,
-        message: "Refresh token is required",
-      });
-    }
-
-    const result = await authService.refreshAccessToken(refreshToken);
+    const result = await authService.refreshAccessToken(req.body.refreshToken);
 
     return res.status(200).json({
       success: true,
