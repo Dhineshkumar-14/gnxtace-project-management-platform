@@ -34,7 +34,12 @@ export const getUsers = async ({
   };
 };
 
-export const inviteUser = async ({ email, first_name, last_name, role_id }) => {
+export const inviteUser = async ({
+  email,
+  first_name,
+  last_name,
+  role_ids,
+}) => {
   const existingUser = await userRepository.findByEmail(email);
 
   if (existingUser) {
@@ -52,10 +57,10 @@ export const inviteUser = async ({ email, first_name, last_name, role_id }) => {
     password_hash,
   });
 
-  if (!role_id) {
-    role_id = 4; //for default viewer access
+  if (!role_ids) {
+    role_id = [3]; //for default member access
   }
-  await userRepository.assignRole(user.id, role_id);
+  await userRepository.updateRoles(user.id, role_ids);
 
   return {
     user,
