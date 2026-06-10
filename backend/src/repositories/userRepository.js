@@ -25,6 +25,10 @@ export const findById = async (id) => {
 export const findUserWithRolesAndPermissions = async (userId) => {
   const user = await db("users").where({ id: userId }).first();
 
+  if (!user) {
+    return null;
+  }
+
   const roles = await db("user_roles")
     .join("roles", "roles.id", "user_roles.role_id")
     .where("user_roles.user_id", userId)
@@ -56,13 +60,13 @@ export const findAll = async (filters) => {
       "u.last_login_at",
       "u.created_at",
       db.raw(`
-    JSON_AGG(
-      DISTINCT JSONB_BUILD_OBJECT(
-        'id', r.id,
-        'name', r.name
-      )
-    ) FILTER (WHERE r.id IS NOT NULL) as roles
-  `),
+        JSON_AGG(
+          DISTINCT JSONB_BUILD_OBJECT(
+            'id', r.id,
+            'name', r.name
+          )
+        ) FILTER (WHERE r.id IS NOT NULL) as roles
+      `),
     )
     .groupBy(
       "u.id",
@@ -102,6 +106,7 @@ export const count = async (filters) => {
     .leftJoin("user_roles as ur", "u.id", "ur.user_id")
     .leftJoin("roles as r", "ur.role_id", "r.id")
     .countDistinct("u.id as total");
+
   if (filters.search) {
     query.where((builder) => {
       builder
@@ -170,11 +175,7 @@ export const update = async (id, data) => {
 
 export const updateRoles = async (userId, roleIds) => {
   await db.transaction(async (trx) => {
-    await trx("user_roles")
-      .where({
-        user_id: userId,
-      })
-      .del();
+    await trx("user_roles").where({ user_id: userId }).del();
 
     const payload = roleIds.map((roleId) => ({
       user_id: userId,
@@ -199,9 +200,34 @@ export const deactivate = async (id) => {
   });
 };
 
+export const updateLastLogin = async (userId) => {
+  await db("users").where({ id: userId }).update({
+    last_login_at: db.fn.now(),
+    updated_at: db.fn.now(),
+  });
+};
+
+export const saveRefreshToken = async (userId, refreshToken, expiresAt) => {
+  await db("users").where({ id: userId }).update({
+    refresh_token: refreshToken,
+    refresh_token_expires_at: expiresAt,
+    updated_at: db.fn.now(),
+  });
+};
+
+export const findByRefreshToken = async (refreshToken) => {
+  return db("users")
+    .where({
+      refresh_token: refreshToken,
+    })
+    .where("refresh_token_expires_at", ">", db.fn.now())
+    .first();
+};
+
 export const removeRefreshToken = async (userId) => {
-  return db("users").where({ id: userId }).update({
+  await db("users").where({ id: userId }).update({
     refresh_token: null,
+    refresh_token_expires_at: null,
     updated_at: db.fn.now(),
   });
 };

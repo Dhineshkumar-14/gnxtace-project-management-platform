@@ -12,6 +12,11 @@ export async function up(knex) {
 
     table.boolean("is_active").defaultTo(true);
 
+    // Refresh token storage
+    table.text("refresh_token").nullable();
+
+    table.timestamp("refresh_token_expires_at").nullable();
+
     table.timestamp("last_login_at").nullable();
 
     table.timestamps(true, true);

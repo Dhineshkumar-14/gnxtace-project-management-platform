@@ -58,7 +58,7 @@ export const inviteUser = async ({
   });
 
   if (!role_ids) {
-    role_id = [3]; //for default member access
+    role_ids = [3]; //for default member access
   }
   await userRepository.updateRoles(user.id, role_ids);
 
