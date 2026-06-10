@@ -14,10 +14,11 @@ import {
   loginSchema,
   refreshTokenSchema,
 } from "../validations/authValidation.js";
+import { loginLimiter } from "../middleware/rateLimiter.js";
 
 const router = Router();
 
-router.post("/login", validate(loginSchema), login);
+router.post("/login", loginLimiter, validate(loginSchema), login);
 
 router.post("/refresh", validate(refreshTokenSchema), refreshToken);
 

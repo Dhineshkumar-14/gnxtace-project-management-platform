@@ -9,38 +9,45 @@ import projectRoutes from "./routes/projectRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+
+import ApiError from "./utils/ApiError.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { generalLimiter } from "./middleware/rateLimiter.js";
 
 dotenv.config();
 
 const app = express();
 
 app.use(helmet());
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  }),
+);
 
 app.use(morgan("dev"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(generalLimiter);
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/projects", projectRoutes);
 app.use("/api/v1/tasks", taskRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
+
+app.use((req, res, next) => {
+  next(new ApiError(404, `URL ${req.originalUrl} not found on this server`));
+});
+
 app.use(errorHandler);
 
-app.use((err, req, res, next) => {
-  console.error(err);
-
-  return res.status(500).json({
-    success: false,
-    message: err.message || "Internal Server Error",
-  });
-});
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(` Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
