@@ -1,4 +1,4 @@
-import { Pencil, UserX } from "lucide-react";
+import { Eye, Pencil, UserX } from "lucide-react";
 
 import { formatDate } from "../../utils/formatDate";
 
@@ -7,34 +7,38 @@ const statusStyles = {
   false: "bg-red-100 text-red-700",
 };
 
-function UserTable({ users, onEdit, onDeactivate }) {
+function UserTable({
+  users,
+  canView,
+  canEdit,
+  canDeactivate,
+  onView,
+  onEdit,
+  onDeactivate,
+}) {
   return (
     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
       <div className="overflow-x-auto">
-        <table className="min-w-full table-fixed">
+        <table className="min-w-[1000px] w-full">
           <thead className="border-b bg-slate-50">
             <tr>
-              <th className="w-[25%] px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 User
               </th>
 
-              <th className="w-[20%] px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Email
               </th>
 
-              <th className="w-[15%] px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Role
               </th>
 
-              <th className="w-[12%] px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Status
               </th>
 
-              <th className="w-[15%] px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Last Login
-              </th>
-
-              <th className="w-[13%] px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Actions
               </th>
             </tr>
@@ -46,29 +50,51 @@ function UserTable({ users, onEdit, onDeactivate }) {
                 key={user.id}
                 className="border-b border-slate-100 transition-colors hover:bg-slate-50"
               >
-                <td className="px-4 py-3">
-                  <div>
-                    <p className="text-sm font-medium text-slate-900">
-                      {user.first_name} {user.last_name}
-                    </p>
+                {/* User */}
+                <td className="px-4 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white">
+                      {user.first_name?.[0]}
+                      {user.last_name?.[0]}
+                    </div>
 
-                    <p className="text-xs text-slate-500">ID #{user.id}</p>
+                    <div>
+                      <p className="font-medium text-slate-900">
+                        {user.first_name} {user.last_name}
+                      </p>
+                    </div>
                   </div>
                 </td>
 
-                <td className="px-4 py-3">
+                {/* Email */}
+                <td className="px-4 py-4">
                   <span className="text-sm text-slate-700">{user.email}</span>
                 </td>
 
-                <td className="px-4 py-3">
-                  <span className="inline-flex rounded-md bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700">
-                    {user.role_name}
-                  </span>
+                {/* Role */}
+                <td className="px-4 py-4">
+                  <div className="flex flex-wrap gap-1">
+                    {user.roles?.length ? (
+                      user.roles.map((role) => (
+                        <span
+                          key={role.id}
+                          className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700"
+                        >
+                          {role.name}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                        No Role
+                      </span>
+                    )}
+                  </div>
                 </td>
 
-                <td className="px-4 py-3">
+                {/* Status */}
+                <td className="px-4 py-4">
                   <span
-                    className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${
+                    className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
                       statusStyles[String(user.is_active)]
                     }`}
                   >
@@ -76,33 +102,50 @@ function UserTable({ users, onEdit, onDeactivate }) {
                   </span>
                 </td>
 
-                <td className="px-4 py-3 text-sm text-slate-700">
-                  {user.last_login_at ? formatDate(user.last_login_at) : "-"}
-                </td>
-
-                <td className="px-4 py-3">
+                {/* Actions */}
+                <td className="px-4 py-4">
                   <div className="flex justify-end gap-2">
-                    <button
-                      onClick={() => onEdit(user)}
-                      className="inline-flex items-center gap-1 rounded-md border border-slate-300 px-2.5 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
-                    >
-                      <Pencil size={12} />
-                      Edit
-                    </button>
+                    {canView && (
+                      <button
+                        onClick={() => onView(user)}
+                        className="rounded-lg p-2 text-blue-600 transition hover:bg-blue-50"
+                        title="View User"
+                      >
+                        <Eye size={16} />
+                      </button>
+                    )}
 
-                    {user.is_active && (
+                    {canEdit && (
+                      <button
+                        onClick={() => onEdit(user)}
+                        className="rounded-lg p-2 text-slate-600 transition hover:bg-slate-100"
+                        title="Edit User"
+                      >
+                        <Pencil size={16} />
+                      </button>
+                    )}
+
+                    {canDeactivate && user.is_active && (
                       <button
                         onClick={() => onDeactivate(user)}
-                        className="inline-flex items-center gap-1 rounded-md border border-red-200 px-2.5 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50"
+                        className="rounded-lg p-2 text-red-600 transition hover:bg-red-50"
+                        title="Deactivate User"
                       >
-                        <UserX size={12} />
-                        Deactivate
+                        <UserX size={16} />
                       </button>
                     )}
                   </div>
                 </td>
               </tr>
             ))}
+
+            {users.length === 0 && (
+              <tr>
+                <td colSpan={6} className="py-12 text-center text-slate-500">
+                  No users found
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

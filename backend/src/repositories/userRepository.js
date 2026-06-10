@@ -5,23 +5,21 @@ export const findByEmail = async (email) => {
 };
 
 export const findById = async (id) => {
-  return await db("users as u")
-    .leftJoin("user_roles as ur", "u.id", "ur.user_id")
-    .leftJoin("roles as r", "ur.role_id", "r.id")
-    .select(
-      "u.id",
-      "u.email",
-      "u.first_name",
-      "u.last_name",
-      "u.is_active",
-      "u.last_login_at",
-      "u.created_at",
-      "u.updated_at",
-      "r.id as role_id",
-      "r.name as role_name",
-    )
-    .where("u.id", id)
-    .first();
+  const user = await db("users").where({ id }).first();
+
+  if (!user) {
+    return null;
+  }
+
+  const roles = await db("user_roles as ur")
+    .join("roles as r", "ur.role_id", "r.id")
+    .where("ur.user_id", id)
+    .select("r.id", "r.name");
+
+  return {
+    ...user,
+    roles,
+  };
 };
 
 export const findUserWithRolesAndPermissions = async (userId) => {
@@ -57,8 +55,23 @@ export const findAll = async (filters) => {
       "u.is_active",
       "u.last_login_at",
       "u.created_at",
-      "r.id as role_id",
-      "r.name as role_name",
+      db.raw(`
+    JSON_AGG(
+      DISTINCT JSONB_BUILD_OBJECT(
+        'id', r.id,
+        'name', r.name
+      )
+    ) FILTER (WHERE r.id IS NOT NULL) as roles
+  `),
+    )
+    .groupBy(
+      "u.id",
+      "u.email",
+      "u.first_name",
+      "u.last_name",
+      "u.is_active",
+      "u.last_login_at",
+      "u.created_at",
     );
 
   if (filters.search) {
@@ -71,7 +84,7 @@ export const findAll = async (filters) => {
   }
 
   if (filters.roleId) {
-    query.where("r.id", filters.roleId);
+    query.where("ur.role_id", filters.roleId);
   }
 
   if (filters.isActive !== undefined) {
@@ -89,7 +102,6 @@ export const count = async (filters) => {
     .leftJoin("user_roles as ur", "u.id", "ur.user_id")
     .leftJoin("roles as r", "ur.role_id", "r.id")
     .countDistinct("u.id as total");
-
   if (filters.search) {
     query.where((builder) => {
       builder
@@ -100,7 +112,7 @@ export const count = async (filters) => {
   }
 
   if (filters.roleId) {
-    query.where("r.id", filters.roleId);
+    query.where("ur.role_id", filters.roleId);
   }
 
   if (filters.isActive !== undefined) {
@@ -183,6 +195,13 @@ export const getRolesByUserId = async (userId) => {
 export const deactivate = async (id) => {
   await db("users").where({ id }).update({
     is_active: false,
+    updated_at: db.fn.now(),
+  });
+};
+
+export const removeRefreshToken = async (userId) => {
+  return db("users").where({ id: userId }).update({
+    refresh_token: null,
     updated_at: db.fn.now(),
   });
 };

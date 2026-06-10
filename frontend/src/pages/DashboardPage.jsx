@@ -8,6 +8,7 @@ import RecentActivities from "../components/dashboard/RecentActivities";
 import ProjectProgress from "../components/dashboard/ProjectProgress";
 import OverdueTasks from "../components/dashboard/OverdueTasks";
 import TopContributors from "../components/dashboard/TopContributors";
+import DashboardSkeleton from "../components/dashboard/DashboardSkeleton";
 
 function DashboardPage() {
   const { dashboard, isLoading, fetchDashboard } = useDashboardStore();

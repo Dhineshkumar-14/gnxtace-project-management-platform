@@ -3,9 +3,7 @@ import * as taskRepository from "../repositories/taskRepository.js";
 
 export const getProjects = async (queryParams) => {
   const page = Number(queryParams.page) || 1;
-
   const limit = Number(queryParams.limit) || 10;
-
   const offset = (page - 1) * limit;
 
   const filters = {
@@ -20,8 +18,25 @@ export const getProjects = async (queryParams) => {
 
   const total = await projectRepository.count(filters);
 
+  const formattedProjects = projects.map((project) => ({
+    id: project.id,
+    name: project.name,
+    description: project.description,
+    status: project.status,
+    start_date: project.start_date,
+    due_date: project.due_date,
+    created_at: project.created_at,
+    updated_at: project.updated_at,
+    owner: {
+      id: project.owner_id,
+      first_name: project.owner_first_name,
+      last_name: project.owner_last_name,
+      email: project.owner_email,
+    },
+  }));
+
   return {
-    data: projects,
+    data: formattedProjects,
     pagination: {
       page,
       limit,
@@ -124,7 +139,6 @@ export const deleteProject = async (id) => {
 
   return true;
 };
-
 
 export const getProjectStats = async (id) => {
   const project = await projectRepository.findById(id);

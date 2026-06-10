@@ -2,15 +2,22 @@ import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { useUserStore } from "../hooks/useUserStore";
+import { useAuthStore } from "../hooks/useAuthStore";
+
+import { hasPermission } from "../utils/permissions";
+import { successToast, errorToast } from "../utils/toast";
 
 import UserEmptyState from "../components/users/UserEmptyState";
 import UserFilters from "../components/users/UserFilters";
 import UserModal from "../components/users/UserModal";
+import UserDetailsModal from "../components/users/UserDetailsModal";
 import UserPagination from "../components/users/UserPagination";
 import UserSkeleton from "../components/users/UserSkeleton";
 import UserTable from "../components/users/UserTable";
 
 function UsersPage() {
+  const currentUser = useAuthStore((state) => state.user);
+
   const {
     users,
     pagination,
@@ -24,7 +31,14 @@ function UsersPage() {
   } = useUserStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+
+  const canViewUsers = hasPermission(currentUser, "users:manage");
+  const canViewUserDetails = hasPermission(currentUser, "users:manage");
+  const canInviteUser = hasPermission(currentUser, "users:manage");
+  const canUpdateUser = hasPermission(currentUser, "users:manage");
+  const canDeactivateUser = hasPermission(currentUser, "users:manage");
 
   useEffect(() => {
     fetchUsers();
@@ -40,9 +54,19 @@ function UsersPage() {
     setIsModalOpen(true);
   };
 
+  const handleViewUser = (user) => {
+    setSelectedUser(user);
+    setIsDetailsOpen(true);
+  };
+
   const handleCloseModal = () => {
     setSelectedUser(null);
     setIsModalOpen(false);
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedUser(null);
+    setIsDetailsOpen(false);
   };
 
   const handleDeactivateUser = async (user) => {
@@ -52,8 +76,30 @@ function UsersPage() {
 
     if (!confirmed) return;
 
-    await deactivateUser(user.id);
+    try {
+      const result = await deactivateUser(user.id);
+
+      if (result?.success) {
+        successToast(result.message || "User deactivated successfully");
+      } else {
+        errorToast(result?.message || "Failed to deactivate user");
+      }
+    } catch (error) {
+      errorToast("Failed to deactivate user");
+    }
   };
+
+  if (!canViewUsers) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-6">
+        <h2 className="text-lg font-semibold text-red-700">Access Denied</h2>
+
+        <p className="mt-2 text-sm text-red-600">
+          You do not have permission to view users.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -67,13 +113,15 @@ function UsersPage() {
           </p>
         </div>
 
-        <button
-          onClick={handleCreateUser}
-          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
-        >
-          <Plus size={18} />
-          Invite User
-        </button>
+        {canInviteUser && (
+          <button
+            onClick={handleCreateUser}
+            className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
+          >
+            <Plus size={18} />
+            Invite User
+          </button>
+        )}
       </div>
 
       {/* Filters */}
@@ -85,6 +133,10 @@ function UsersPage() {
       ) : users.length > 0 ? (
         <UserTable
           users={users}
+          canView={canViewUserDetails}
+          canEdit={canUpdateUser}
+          canDeactivate={canDeactivateUser}
+          onView={handleViewUser}
           onEdit={handleEditUser}
           onDeactivate={handleDeactivateUser}
         />
@@ -105,13 +157,20 @@ function UsersPage() {
         />
       )}
 
-      {/* Modal */}
+      {/* Create / Edit Modal */}
       <UserModal
         open={isModalOpen}
         onClose={handleCloseModal}
         user={selectedUser}
         inviteUser={inviteUser}
         updateUser={updateUser}
+      />
+
+      {/* Details Modal */}
+      <UserDetailsModal
+        open={isDetailsOpen}
+        user={selectedUser}
+        onClose={handleCloseDetails}
       />
     </div>
   );
