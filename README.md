@@ -17,7 +17,7 @@ A full-stack Project Management Platform built with React.js, Node.js, Express.j
 
 - Invite Users
 - Update User Information
-- Assign Roles
+- Assign Multiple Roles
 - Deactivate Users
 - User Listing with Pagination and Search
 
@@ -25,17 +25,27 @@ A full-stack Project Management Platform built with React.js, Node.js, Express.j
 
 - Create Projects
 - Update Projects
+- Archive Projects
 - Project Status Tracking
-- Project Member Management
+- Project Ownership Management
 
 ### Task Management
 
 - Create Tasks
 - Update Tasks
+- Delete Tasks
 - Task Assignment
 - Priority Management
 - Status Tracking
 - Due Date Management
+
+### Dashboard
+
+- Project Statistics
+- Task Statistics
+- Project Progress Overview
+- Overdue Task Tracking
+- Team Contribution Insights
 
 ### Validation
 
@@ -54,14 +64,15 @@ A full-stack Project Management Platform built with React.js, Node.js, Express.j
 - Zustand
 - Axios
 - Tailwind CSS
+- Lucide React
 
 ## Backend
 
 - Node.js
 - Express.js
-- Knex.js
 - PostgreSQL
-- JWT Authentication
+- Knex.js
+- JWT
 - bcryptjs
 - Zod
 
@@ -85,17 +96,30 @@ Repositories
 Database
 ```
 
-Frontend follows feature-based organization:
+Frontend follows feature-based architecture:
 
 ```text
-pages/
-components/
-hooks/
-services/
-layouts/
-routes/
-utils/
+src/
+├── components/
+├── hooks/
+├── layouts/
+├── pages/
+├── routes/
+├── services/
+├── store/
+└── utils/
 ```
+
+---
+
+# Security
+
+- Password Hashing using bcryptjs
+- JWT Authentication
+- Refresh Token Rotation
+- Role-Based Authorization
+- Protected API Routes
+- Request Validation using Zod
 
 ---
 
@@ -113,28 +137,60 @@ utils/
 ## Refresh Token Rotation
 
 1. Client sends refresh token
-2. Refresh token signature is verified
-3. Refresh token is validated against database
+2. Refresh token is verified
+3. Stored token is validated
 4. New access token generated
 5. New refresh token generated
-6. Stored refresh token is replaced
-7. New token pair returned
+6. Previous refresh token replaced
+7. Updated token pair returned
 
 ## Logout
 
-1. Stored refresh token is removed
-2. Session becomes invalid
+1. Refresh token removed from database
+2. Session invalidated
 
 ---
 
-# RBAC Permissions
+# RBAC Roles
 
-| Role    | Permissions               |
-| ------- | ------------------------- |
-| Admin   | Full Access               |
-| Manager | Project & Task Management |
-| Member  | Assigned Task Access      |
-| Viewer  | Read Only Access          |
+| Role    | Access                           |
+| ------- | -------------------------------- |
+| Admin   | Full System Access               |
+| Manager | Manage Projects, Tasks and Users |
+| Member  | Assigned Project & Task Access   |
+| Viewer  | Read Only Access                 |
+
+---
+
+# Project Structure
+
+```text
+backend/
+├── src/
+│   ├── config/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── repositories/
+│   ├── routes/
+│   ├── services/
+│   ├── validations/
+│   └── utils/
+│
+├── migrations/
+├── seeds/
+└── knexfile.js
+
+frontend/
+├── src/
+│   ├── components/
+│   ├── hooks/
+│   ├── layouts/
+│   ├── pages/
+│   ├── routes/
+│   ├── services/
+│   ├── store/
+│   └── utils/
+```
 
 ---
 
@@ -164,6 +220,8 @@ JWT_REFRESH_EXPIRES_IN=7d
 
 ## Backend
 
+Install dependencies:
+
 ```bash
 npm install
 ```
@@ -190,8 +248,15 @@ npm run dev
 
 ## Frontend
 
+Install dependencies:
+
 ```bash
 npm install
+```
+
+Start application:
+
+```bash
 npm run dev
 ```
 
@@ -271,27 +336,94 @@ PUT    /tasks/:id
 DELETE /tasks/:id
 ```
 
+## Dashboard
+
+```text
+GET /dashboard/stats
+GET /dashboard/project-progress
+GET /dashboard/overdue-tasks
+GET /dashboard/top-contributors
+GET /dashboard/recent-activities
+```
+
+---
+
+# API Testing
+
+A Postman collection is included in the repository:
+
+```text
+postman/project-management-platform.postman_collection.json
+```
+
+Recommended Postman environment variables:
+
+```text
+baseUrl
+accessToken
+refreshToken
+projectId
+taskId
+userId
+```
+
 ---
 
 # Assumptions
 
-- PostgreSQL was used instead of MySQL for familiarity and faster development.
-- Single refresh token per user is maintained.
+- PostgreSQL is used as the primary database.
+- JWT-based authentication is used.
+- Single active refresh token is maintained per user.
 - Soft deactivation is used for users.
-- Authentication is token-based using JWT.
+- RBAC permissions are role-driven.
 
 ---
 
-# Future Improvements
+# Known Limitations
+
+- Email invitation service is mocked.
+- Audit logs are not yet implemented.
+- Automated testing coverage is pending.
+- Docker deployment is not configured.
+- File attachment support is not available.
+
+---
+
+# Future Enhancements
+
+## User & Security
+
+- Change Password Module
+- Forgot Password Flow
+- Email Invitation Service
+- User Profile Management
+- User Settings Module
+
+## Monitoring
 
 - Audit Logging
-- Email Invitations
 - Activity Tracking
-- File Attachments
+- System Logs
+
+## Project & Task Management
+
+- Kanban Board with Drag & Drop
+- Task Comments
+- Task Attachments
+- Task Labels & Tags
+- Project Members Management
+
+## Collaboration
+
 - Notifications
-- WebSocket Updates
-- Unit & Integration Tests
-- Docker Deployment
+- Real-time Updates using WebSockets
+- Team Mentions
+
+## Quality
+
+- Unit Testing
+- Integration Testing
+- E2E Testing
 
 ---
 

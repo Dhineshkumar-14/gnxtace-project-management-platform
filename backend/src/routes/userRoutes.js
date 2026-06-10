@@ -32,6 +32,13 @@ router.post(
 );
 
 router.get("/:id", authenticate, authorize("users:manage"), getUserById);
+router.put(
+  "/:id/roles",
+  authenticate,
+  authorize("users:manage"),
+  validate(updateUserRolesSchema),
+  updateUserRoles,
+);
 
 router.put(
   "/:id",
@@ -39,14 +46,6 @@ router.put(
   authorize("users:manage"),
   validate(updateUserSchema),
   updateUser,
-);
-
-router.put(
-  "/:id/roles",
-  authenticate,
-  authorize("users:manage"),
-  validate(updateUserRolesSchema),
-  updateUserRoles,
 );
 
 router.delete("/:id", authenticate, authorize("users:manage"), deactivateUser);

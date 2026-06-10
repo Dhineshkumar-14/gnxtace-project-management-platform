@@ -85,12 +85,13 @@ export const findById = async (id) => {
 };
 
 export const findDetailsById = async (id) => {
-  return await db("projects as p")
+  return db("projects as p")
     .leftJoin("users as u", "p.owner_id", "u.id")
     .select(
       "p.*",
       "u.id as owner_user_id",
-      "u.name as owner_name",
+      "u.first_name as owner_first_name",
+      "u.last_name as owner_last_name",
       "u.email as owner_email",
     )
     .where("p.id", id)
