@@ -1,220 +1,302 @@
 # Project Management Platform
 
-## Tech Stack
+A full-stack Project Management Platform built with React.js, Node.js, Express.js, PostgreSQL, Knex.js, and Zustand.
 
-Frontend:
+## Features
 
-- React
-- Vite
-- Tailwind
+### Authentication & Authorization
 
-Backend:
+- JWT Authentication
+- Access Token & Refresh Token
+- Refresh Token Rotation
+- Role-Based Access Control (RBAC)
+- Protected Routes
+- Session Management
 
-- Node.js
-- Express
-- Knex
-- PostgreSQL
+### User Management
 
-## Database Choice
-
-PostgreSQL was used instead of MySQL. Since Knex.js provides database abstraction, the overall architecture and implementation remain consistent with the assessment requirements.
-
-## Architecture
-
-Controller
-→ Service
-→ Repository
-→ Database
-
-
-## Authentication Module
-
-### Features Implemented
-
-* JWT-based Authentication
-* Access Token Authentication Middleware
-* Refresh Token Support
-* User Profile Endpoint (`/auth/me`)
-* Logout Endpoint
-* Role-Based Access Control (RBAC)
-* Protected Routes
-* Axios Request/Response Interceptors
-* Zustand Authentication Store
-* Login Page UI
-* Client-side Form Validation
-
-### Authentication Endpoints
-
-| Method | Endpoint             | Description                    |
-| ------ | -------------------- | ------------------------------ |
-| POST   | /api/v1/auth/login   | Authenticate user              |
-| POST   | /api/v1/auth/logout  | Logout current user            |
-| POST   | /api/v1/auth/refresh | Generate new access token      |
-| GET    | /api/v1/auth/me      | Get current authenticated user |
-
-### Roles
-
-* Admin
-* Manager
-* Member
-* Viewer
-
-### Permissions
-
-* projects:create
-* projects:read
-* projects:update
-* projects:delete
-* tasks:create
-* tasks:update
-* tasks:delete
-* users:manage
-* reports:view
-
-### Seeded Users
-
-| Role    | Email                                             | Password  |
-| ------- | ------------------------------------------------- | --------- |
-| Admin   | [admin@example.com](mailto:admin@example.com)     | Admin@123 |
-| Manager | [manager@example.com](mailto:manager@example.com) | User@1234 |
-| Member  | [member@example.com](mailto:member@example.com)   | User@1234 |
-| Viewer  | [viewer@example.com](mailto:viewer@example.com)   | User@1234 |
-
-### Frontend Authentication
-
-* Zustand for state management
-* Axios interceptors for token handling
-* Protected routes with permission checks
-* Responsive login page using React + Tailwind CSS
-
-### Security
-
-* Password hashing using bcrypt
-* JWT Access Tokens
-* Refresh Token workflow
-* Role-Based Access Control (RBAC)
-* Authorization middleware
-
-## Projects Module
-
-### Features Implemented
-
-* Create Project
-* Update Project
-* Delete Project
-* View Project Details
-* List Projects with Pagination
-* Search Projects
-* Filter Projects by Status
-* Project Start Date and Due Date Management
-* Responsive Project Management UI
-* Zustand State Management
-
-### Project Endpoints
-
-| Method | Endpoint             | Description         |
-| ------ | -------------------- | ------------------- |
-| POST   | /api/v1/projects     | Create Project      |
-| GET    | /api/v1/projects     | Get All Projects    |
-| GET    | /api/v1/projects/:id | Get Project Details |
-| PUT    | /api/v1/projects/:id | Update Project      |
-| DELETE | /api/v1/projects/:id | Delete Project      |
-
-### Project Statuses
-
-| Status    | Description                |
-| --------- | -------------------------- |
-| active    | Active project             |
-| on_hold   | Project temporarily paused |
-| completed | Project completed          |
-| archived  | Archived project           |
-
----
-
-## Tasks Module
-
-### Features Implemented
-
-* Create Task
-* Update Task
-* Delete Task
-* View Task Details
-* Task Assignment
-* Task Priority Management
-* Task Status Tracking
-* Search Tasks
-* Filter Tasks
-* Pagination
-* Responsive Task Management UI
-* Zustand State Management
-
-### Task Endpoints
-
-| Method | Endpoint          | Description      |
-| ------ | ----------------- | ---------------- |
-| POST   | /api/v1/tasks     | Create Task      |
-| GET    | /api/v1/tasks     | Get All Tasks    |
-| GET    | /api/v1/tasks/:id | Get Task Details |
-| PUT    | /api/v1/tasks/:id | Update Task      |
-| DELETE | /api/v1/tasks/:id | Delete Task      |
-
-### Task Statuses
-
-| Status      | Description       |
-| ----------- | ----------------- |
-| todo        | Task not started  |
-| in_progress | Task in progress  |
-| in_review   | Task under review |
-| done        | Task completed    |
-| cancelled   | Task cancelled    |
-
-### Task Priorities
-
-| Priority | Description       |
-| -------- | ----------------- |
-| low      | Low priority      |
-| medium   | Medium priority   |
-| high     | High priority     |
-| critical | Critical priority |
-
----
-
-## Frontend Features
+- Invite Users
+- Update User Information
+- Assign Roles
+- Deactivate Users
+- User Listing with Pagination and Search
 
 ### Project Management
 
-* Project Listing
-* Project Filters
-* Project Pagination
-* Project Create/Edit Modal
-* Loading Skeletons
-* Empty States
-* Responsive Design
+- Create Projects
+- Update Projects
+- Project Status Tracking
+- Project Member Management
 
 ### Task Management
 
-* Task Listing
-* Task Filters
-* Task Pagination
-* Task Create/Edit Modal
-* Task Delete Action
-* Loading Skeletons
-* Empty States
-* Responsive Design
+- Create Tasks
+- Update Tasks
+- Task Assignment
+- Priority Management
+- Status Tracking
+- Due Date Management
+
+### Validation
+
+- Zod Request Validation
+- Backend API Validation
+- Frontend Form Validation
 
 ---
 
-## State Management
+# Technology Stack
 
-The frontend uses Zustand stores for:
+## Frontend
 
-* Authentication
-* Projects
-* Tasks
+- React.js
+- React Router
+- Zustand
+- Axios
+- Tailwind CSS
 
-Benefits:
+## Backend
 
-* Lightweight state management
-* Simple API
-* Minimal boilerplate
-* Better maintainability
+- Node.js
+- Express.js
+- Knex.js
+- PostgreSQL
+- JWT Authentication
+- bcryptjs
+- Zod
+
+---
+
+# Architecture
+
+Backend follows a layered architecture:
+
+```text
+Routes
+  ↓
+Middleware
+  ↓
+Controllers
+  ↓
+Services
+  ↓
+Repositories
+  ↓
+Database
+```
+
+Frontend follows feature-based organization:
+
+```text
+pages/
+components/
+hooks/
+services/
+layouts/
+routes/
+utils/
+```
+
+---
+
+# Authentication Flow
+
+## Login
+
+1. User submits credentials
+2. Credentials are validated
+3. Access Token is generated
+4. Refresh Token is generated
+5. Refresh Token is stored in database
+6. Tokens returned to client
+
+## Refresh Token Rotation
+
+1. Client sends refresh token
+2. Refresh token signature is verified
+3. Refresh token is validated against database
+4. New access token generated
+5. New refresh token generated
+6. Stored refresh token is replaced
+7. New token pair returned
+
+## Logout
+
+1. Stored refresh token is removed
+2. Session becomes invalid
+
+---
+
+# RBAC Permissions
+
+| Role    | Permissions               |
+| ------- | ------------------------- |
+| Admin   | Full Access               |
+| Manager | Project & Task Management |
+| Member  | Assigned Task Access      |
+| Viewer  | Read Only Access          |
+
+---
+
+# Environment Variables
+
+Create a `.env` file:
+
+```env
+PORT=5000
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=project_management
+DB_USER=postgres
+DB_PASSWORD=password
+
+JWT_SECRET=your_jwt_secret
+JWT_REFRESH_SECRET=your_refresh_secret
+
+JWT_ACCESS_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+```
+
+---
+
+# Installation
+
+## Backend
+
+```bash
+npm install
+```
+
+Run migrations:
+
+```bash
+npm run migrate
+```
+
+Run seed data:
+
+```bash
+npm run seed
+```
+
+Start server:
+
+```bash
+npm run dev
+```
+
+---
+
+## Frontend
+
+```bash
+npm install
+npm run dev
+```
+
+---
+
+# Seed Credentials
+
+## Admin
+
+```text
+Email: admin@example.com
+Password: Admin@123
+```
+
+## Manager
+
+```text
+Email: manager@example.com
+Password: User@1234
+```
+
+## Member
+
+```text
+Email: member@example.com
+Password: User@1234
+```
+
+## Viewer
+
+```text
+Email: viewer@example.com
+Password: User@1234
+```
+
+---
+
+# API Endpoints
+
+## Authentication
+
+```text
+POST /auth/login
+POST /auth/refresh
+POST /auth/logout
+GET  /auth/me
+```
+
+## Users
+
+```text
+GET    /users
+GET    /users/:id
+POST   /users/invite
+PUT    /users/:id
+PUT    /users/:id/roles
+DELETE /users/:id
+```
+
+## Projects
+
+```text
+GET    /projects
+GET    /projects/:id
+POST   /projects
+PUT    /projects/:id
+DELETE /projects/:id
+```
+
+## Tasks
+
+```text
+GET    /tasks
+GET    /tasks/:id
+POST   /tasks
+PUT    /tasks/:id
+DELETE /tasks/:id
+```
+
+---
+
+# Assumptions
+
+- PostgreSQL was used instead of MySQL for familiarity and faster development.
+- Single refresh token per user is maintained.
+- Soft deactivation is used for users.
+- Authentication is token-based using JWT.
+
+---
+
+# Future Improvements
+
+- Audit Logging
+- Email Invitations
+- Activity Tracking
+- File Attachments
+- Notifications
+- WebSocket Updates
+- Unit & Integration Tests
+- Docker Deployment
+
+---
+
+# Author
+
+Dhinesh Kumar
+
+Frontend Developer | React.js | Node.js | PostgreSQL

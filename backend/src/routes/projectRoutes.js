@@ -10,14 +10,19 @@ import {
   getProjectStats,
   updateProject,
 } from "../controllers/projectController.js";
+import { validate } from "../middleware/validate.js";
+import {
+  createProjectSchema,
+  updateProjectSchema,
+} from "../validations/projectValidation.js";
 
 const router = Router();
 
 router.get("/", authenticate, authorize("projects:read"), getProjects);
 
-router.post("/", authenticate, authorize("projects:create"), createProject);
+router.post("/", authenticate, validate(createProjectSchema), createProject);
 
-router.put("/:id", authenticate, authorize("projects:update"), updateProject);
+router.put("/:id", authenticate, validate(updateProjectSchema), updateProject);
 
 router.get("/:id", authenticate, authorize("projects:read"), getProjectById);
 
