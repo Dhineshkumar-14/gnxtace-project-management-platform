@@ -1,13 +1,14 @@
 import axios from "axios";
 import { useAuthStore } from "../hooks/useAuthStore";
 
-
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 10000,
 });
 
-// Attach access token
+let isRefreshing = false;
+let refreshPromise = null;
+
 apiClient.interceptors.request.use(
   (config) => {
     const token = useAuthStore.getState().accessToken;
@@ -21,7 +22,6 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// Auto Refresh Token
 apiClient.interceptors.response.use(
   (response) => response,
 
@@ -34,10 +34,20 @@ apiClient.interceptors.response.use(
       try {
         const { refreshToken } = useAuthStore.getState();
 
-        const response = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL}/auth/refresh`,
-          { refreshToken },
-        );
+        if (!refreshToken) {
+          throw new Error("No refresh token");
+        }
+
+        if (!isRefreshing) {
+          isRefreshing = true;
+
+          refreshPromise = axios.post(
+            `${import.meta.env.VITE_API_BASE_URL}/auth/refresh`,
+            { refreshToken },
+          );
+        }
+
+        const response = await refreshPromise;
 
         const newAccessToken = response.data.data.accessToken;
 
@@ -45,10 +55,16 @@ apiClient.interceptors.response.use(
           accessToken: newAccessToken,
         });
 
+        isRefreshing = false;
+        refreshPromise = null;
+
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
         return apiClient(originalRequest);
       } catch (refreshError) {
+        isRefreshing = false;
+        refreshPromise = null;
+
         useAuthStore.setState({
           user: null,
           accessToken: null,
