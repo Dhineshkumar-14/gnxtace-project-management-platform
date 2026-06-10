@@ -1,6 +1,13 @@
 import knex from "knex";
-import knexConfig from "../../knexfile.js";
 
-const db = knex(knexConfig.development);
+const db = knex({
+  client: "pg",
+  connection: {
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  },
+});
 
 export default db;
