@@ -15,7 +15,7 @@ export const inviteUserSchema = z.object({
       .max(100),
 
     role_ids: z.array(z.number()).optional(),
-  }),
+  }).strict,
 });
 
 export const updateUserSchema = z.object({
@@ -33,7 +33,7 @@ export const updateUserSchema = z.object({
 
   params: z.object({
     id: z.coerce.number().positive(),
-  }),
+  }).strict,
 });
 
 export const updateUserRolesSchema = z.object({
@@ -43,5 +43,5 @@ export const updateUserRolesSchema = z.object({
 
   params: z.object({
     id: z.coerce.number().positive(),
-  }),
+  }).strict,
 });

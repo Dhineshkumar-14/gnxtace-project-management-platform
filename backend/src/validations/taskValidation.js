@@ -28,7 +28,7 @@ export const createTaskSchema = z.object({
     priority: taskPriorityEnum.default("medium"),
 
     due_date: z.string().optional(),
-  }),
+  }).strict,
 });
 
 export const updateTaskSchema = z.object({
@@ -48,5 +48,5 @@ export const updateTaskSchema = z.object({
     priority: taskPriorityEnum.optional(),
 
     due_date: z.string().optional(),
-  }),
+  }).strict,
 });
