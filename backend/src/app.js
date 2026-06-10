@@ -9,6 +9,8 @@ import projectRoutes from "./routes/projectRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+
+import ApiError from "./utils/ApiError.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 dotenv.config();
@@ -28,19 +30,15 @@ app.use("/api/v1/projects", projectRoutes);
 app.use("/api/v1/tasks", taskRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
-app.use(errorHandler);
 
-app.use((err, req, res, next) => {
-  console.error(err);
-
-  return res.status(500).json({
-    success: false,
-    message: err.message || "Internal Server Error",
-  });
+app.use("*", (req, res, next) => {
+  next(new ApiError(404, "Route not found"));
 });
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(` Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

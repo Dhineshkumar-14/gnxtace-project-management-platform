@@ -54,7 +54,7 @@ export const inviteUser = async ({
 
   const temporaryPassword = crypto.randomBytes(8).toString("hex");
 
-  const password_hash = await bcrypt.hash(temporaryPassword, 10);
+  const password_hash = await bcrypt.hash(temporaryPassword, 12);
 
   const user = await userRepository.createUser({
     email,
