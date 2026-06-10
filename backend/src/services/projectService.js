@@ -1,6 +1,8 @@
 import * as projectRepository from "../repositories/projectRepository.js";
 import * as taskRepository from "../repositories/taskRepository.js";
 
+import ApiError from "../utils/ApiError.js";
+
 export const getProjects = async (queryParams) => {
   const page = Number(queryParams.page) || 1;
   const limit = Number(queryParams.limit) || 10;
@@ -50,7 +52,7 @@ export const getProjectById = async (id) => {
   const project = await projectRepository.findDetailsById(id);
 
   if (!project) {
-    throw new Error("Project not found");
+    throw new ApiError(404, "Project not found");
   }
 
   const tasks = await taskRepository.findByProjectId(id);
@@ -93,11 +95,11 @@ export const createProject = async (projectData) => {
   } = projectData;
 
   if (!ownerId) {
-    throw new Error("Owner is required");
+    throw new ApiError(400, "Owner is required");
   }
 
   if (!name?.trim()) {
-    throw new Error("Project name is required");
+    throw new ApiError(400, "Project name is required");
   }
 
   const projectId = await projectRepository.create({
@@ -116,11 +118,11 @@ export const updateProject = async (id, projectData) => {
   const project = await projectRepository.findById(id);
 
   if (!project) {
-    throw new Error("Project not found");
+    throw new ApiError(404, "Project not found");
   }
 
   if (projectData.name !== undefined && !projectData.name?.trim()) {
-    throw new Error("Project name is required");
+    throw new ApiError(400, "Project name is required");
   }
 
   await projectRepository.update(id, projectData);
@@ -132,7 +134,7 @@ export const deleteProject = async (id) => {
   const project = await projectRepository.findById(id);
 
   if (!project) {
-    throw new Error("Project not found");
+    throw new ApiError(404, "Project not found");
   }
 
   await projectRepository.archive(id);
@@ -144,7 +146,7 @@ export const getProjectStats = async (id) => {
   const project = await projectRepository.findById(id);
 
   if (!project) {
-    throw new Error("Project not found");
+    throw new ApiError(404, "Project not found");
   }
 
   return await taskRepository.getProjectStats(id);

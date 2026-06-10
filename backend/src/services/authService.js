@@ -2,7 +2,6 @@ import db from "../config/database.js";
 
 import {
   findByEmail,
-  findById,
   findUserWithRolesAndPermissions,
   removeRefreshToken,
   saveRefreshToken,
@@ -17,6 +16,8 @@ import {
   generateRefreshToken,
   verifyRefreshToken,
 } from "../utils/jwt.js";
+
+import ApiError from "../utils/ApiError.js";
 
 export const getUserRoles = async (userId) => {
   const roles = await db("user_roles")
@@ -41,13 +42,13 @@ export const login = async (email, password) => {
   const user = await findByEmail(email);
 
   if (!user || !user.is_active) {
-    throw new Error("INVALID_CREDENTIALS");
+    throw new ApiError(401, "Invalid email or password");
   }
 
   const isValid = await comparePassword(password, user.password_hash);
 
   if (!isValid) {
-    throw new Error("INVALID_CREDENTIALS");
+    throw new ApiError(401, "Invalid email or password");
   }
 
   const roles = await getUserRoles(user.id);
@@ -92,12 +93,16 @@ export const logout = async (userId) => {
 };
 
 export const refreshAccessToken = async (refreshToken) => {
-  verifyRefreshToken(refreshToken);
+  try {
+    verifyRefreshToken(refreshToken);
+  } catch {
+    throw new ApiError(401, "Invalid refresh token");
+  }
 
   const user = await findByRefreshToken(refreshToken);
 
   if (!user || !user.is_active) {
-    throw new Error("INVALID_REFRESH_TOKEN");
+    throw new ApiError(401, "Invalid refresh token");
   }
 
   const payload = {
@@ -107,7 +112,6 @@ export const refreshAccessToken = async (refreshToken) => {
 
   const accessToken = generateAccessToken(payload);
 
-  // Refresh Token Rotation
   const newRefreshToken = generateRefreshToken(payload);
 
   const refreshTokenExpiresAt = new Date();
@@ -125,7 +129,7 @@ export const getCurrentUser = async (userId) => {
   const user = await findUserWithRolesAndPermissions(userId);
 
   if (!user) {
-    throw new Error("USER_NOT_FOUND");
+    throw new ApiError(404, "User not found");
   }
 
   return user;

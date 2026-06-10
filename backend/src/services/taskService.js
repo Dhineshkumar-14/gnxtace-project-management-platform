@@ -1,6 +1,8 @@
 import * as taskRepository from "../repositories/taskRepository.js";
 import * as projectRepository from "../repositories/projectRepository.js";
 
+import ApiError from "../utils/ApiError.js";
+
 export const getTasks = async (queryParams) => {
   const page = Number(queryParams.page) || 1;
 
@@ -45,17 +47,17 @@ export const createTask = async (taskData) => {
   } = taskData;
 
   if (!project_id) {
-    throw new Error("Project is required");
+    throw new ApiError(400, "Project is required");
   }
 
   const project = await projectRepository.findById(project_id);
 
   if (!project) {
-    throw new Error("Project not found");
+    throw new ApiError(404, "Project not found");
   }
 
   if (!title?.trim()) {
-    throw new Error("Task title is required");
+    throw new ApiError(400, "Task title is required");
   }
 
   const taskId = await taskRepository.create({
@@ -75,7 +77,7 @@ export const updateTask = async (id, taskData) => {
   const task = await taskRepository.findById(id);
 
   if (!task) {
-    throw new Error("Task not found");
+    throw new ApiError(404, "Task not found");
   }
 
   await taskRepository.update(id, taskData);
@@ -87,7 +89,7 @@ export const updateTaskStatus = async (id, status) => {
   const task = await taskRepository.findById(id);
 
   if (!task) {
-    throw new Error("Task not found");
+    throw new ApiError(404, "Task not found");
   }
 
   const allowedStatuses = [
@@ -99,7 +101,7 @@ export const updateTaskStatus = async (id, status) => {
   ];
 
   if (!allowedStatuses.includes(status)) {
-    throw new Error("Invalid task status");
+    throw new ApiError(400, "Invalid task status");
   }
 
   await taskRepository.updateStatus(id, status);
@@ -111,7 +113,7 @@ export const getTaskById = async (id) => {
   const task = await taskRepository.findById(id);
 
   if (!task) {
-    throw new Error("Task not found");
+    throw new ApiError(404, "Task not found");
   }
 
   return task;
@@ -121,7 +123,7 @@ export const deleteTask = async (id) => {
   const task = await taskRepository.findById(id);
 
   if (!task) {
-    throw new Error("Task not found");
+    throw new ApiError(404, "Task not found");
   }
 
   await taskRepository.deleteById(id);
