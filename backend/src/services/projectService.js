@@ -55,9 +55,9 @@ export const getProjectById = async (id) => {
     throw new ApiError(404, "Project not found");
   }
 
-  const tasks = await taskRepository.findByProjectId(id);
+  const tasks = await taskRepository.findDetailsById(id);
 
-  const taskSummary = await taskRepository.getTaskSummary(id);
+  const taskSummary = await taskRepository.getProjectStats(id);
 
   return {
     project: {

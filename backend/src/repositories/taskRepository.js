@@ -1,14 +1,13 @@
 import db from "../config/database.js";
 
 export const findDetailsById = async (id) => {
-  return await db("projects as p")
+  return db("projects as p")
     .leftJoin("users as u", "p.owner_id", "u.id")
     .select(
-      "t.*",
-      "p.name as project_name",
-      "u.id as assignee_user_id",
-      db.raw(`CONCAT(u.first_name, ' ', u.last_name) as assignee_name`),
-      "u.email as assignee_email",
+      "p.*",
+      "u.id as owner_user_id",
+      db.raw("CONCAT(u.first_name, ' ', u.last_name) as owner_name"),
+      "u.email as owner_email",
     )
     .where("p.id", id)
     .first();
